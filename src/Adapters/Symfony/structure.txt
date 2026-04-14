@@ -1,0 +1,84 @@
+Symfony/
+├─ Bootstrap/
+│  ├─ Http/
+│  │  ├─ RouteInvoker.php
+│  │  ├─ SymfonyProxyController.php
+│  │  └─ SymfonyRouteLoader.php
+│  ├─ Mapping/
+│  │  ├─ MapCache.php
+│  │  ├─ MapDefaults.php
+│  │  └─ MapScanner.php
+│  └─ BootstrapContext.php
+│
+├─ Console/
+│  └─ Command/
+│     ├─ Sqlite/
+│     ├─ CacheRoutesCommand.php
+│     └─ WatchRoutesCommand.php
+│
+├─ Controllers/
+│  └─ Controller.php
+│
+├─ DependencyInjection/
+│  ├─ Compiler/
+│  │  ├─ Adapter/
+│  │  │  └─ FrameworkBindingsPass.php
+│  │  ├─ Behavior/
+│  │  │  ├─ ConsoleCommandsPass.php
+│  │  │  ├─ ExceptionHandlingPass.php
+│  │  │  └─ RoutingPass.php
+│  │  └─ Core/
+│  │     └─ CqrsMapsPass.php
+│  │
+│  ├─ Pipeline/
+│  │  ├─ SymfonyPipeline.php
+│  │  ├─ RoutingPipeline.php
+│  │  ├─ ConsolePipeline.php
+│  │  └─ FrameworkPipeline.php
+│  │
+│  ├─ Registrar/
+│  │  ├─ AutoconfigurationRegistrar.php
+│  │  ├─ ConsoleRegistrar.php
+│  │  ├─ CqrsMapRegistrar.php
+│  │  ├─ ExceptionRegistrar.php
+│  │  ├─ FrameworkBindingsRegistrar.php
+│  │  ├─ RoutingRegistrar.php
+│  │  └─ RegistrarRegistry.php   ← renamed
+│  │
+│  ├─ Guard/
+│  │  └─ SymfonyGuard.php
+│  │
+│  ├─ Support/
+│  │  ├─ ContextFactory.php
+│  │  ├─ CqrsContext.php
+│  │  └─ PathNormalizer.php
+│  │
+│  ├─ Configuration.php
+│  ├─ SymfonyRegistrar.php       ← slim entrypoint
+│  └─ ZoltaForgeExtension.php
+│
+├─ Exceptions/
+│  ├─ ExceptionMapper.php
+│  └─ ExceptionSubscriber.php
+│
+├─ Requests/
+│  ├─ Bridge/
+│  │  └─ SymfonyBridgeRequest.php
+│  ├─ BaseRequest.php
+│  └─ HttpQueryOptions.php
+│
+├─ Services/
+│  ├─ Locator/
+│  │  └─ HandlerLocatorBuilder.php
+│  ├─ Serialization/
+│  │  └─ Normalizer.php
+│  ├─ CqrsLocator.php
+│  ├─ SymfonyAuthorizationService.php
+│  ├─ SymfonyHTTP.php
+│  ├─ SymfonyRequestPort.php
+│  └─ SymfonyValidatorAdapter.php
+│
+├─ Support/
+├─ SymfonyHttpAdapter.php
+├─ SymfonyResponseBridge.php
+└─ ZoltaForgeBundle.php

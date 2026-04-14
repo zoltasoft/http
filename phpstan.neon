@@ -1,0 +1,80 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+
+    level: 6
+
+    paths:
+        - src
+        - tests
+
+    bootstrapFiles:
+        - vendor/autoload.php
+        - stubs/symfony.php
+        - stubs/doctrine.php
+        - stubs/laravel_app.php
+
+    scanFiles:
+        - stubs/phpstan/test-dummies.php
+
+    stubFiles:
+        - stubs/phpstan/app_helpers.php
+
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
+
+    excludePaths:
+        - src/Controller/Controller.php
+        - src/Request/BaseRequest.php
+
+    ignoreErrors:
+        # Optional Symfony dependencies (Security, Validator, Twig)
+        - '#Class Symfony\\Component\\Security\\.*not found#'
+        - '#Symfony\\Component\\Validator\\.*not found#'
+        - '#invalid return type Symfony\\Component\\Validator\\#'
+        - '#Class Twig\\Environment not found#'
+        - '#on an unknown class Symfony\\Component\\Security#'
+        - '#on an unknown class Symfony\\Component\\Validator#'
+        # Optional Inertia dependency
+        - '#on an unknown class Inertia\\Inertia#'
+        # External Zolta packages that may not be installed
+        - '#Zolta\\Core\\.*not found#'
+        - '#Class Zolta\\Laravel\\.*not found#'
+        - '#contains unknown class Zolta\\Core\\#'
+        - '#on an unknown class Zolta\\Core\\#'
+        - '#on an unknown class Zolta\\Laravel\\#'
+        - '#type class-string<Zolta\\Core\\#'
+        # Dynamic framework bridge patterns using class_alias
+        - '#Call to an undefined method#'
+        - '#Call to an undefined static method#'
+        - path: src/Adapters/Symfony/Requests/Bridge/SymfonyBridgeRequest.php
+          message: '#Call to method.*on a mixed#'
+        # Pre-existing type looseness at level 6 (iterable value types, template types)
+        - identifier: missingType.iterableValue
+        - identifier: argument.templateType
+        # Unused constructor parameters in BridgeRequest (stored via promoted properties)
+        - path: src/Request/Bridge/BridgeRequest.php
+          identifier: constructor.unusedParameter
+        # Missing parameter types in bridge delegates
+        - path: src/Request/Bridge/BridgeRequest.php
+          identifier: missingType.parameter
+        # Redundant type narrows (is_string/is_object) in framework-agnostic code
+        - identifier: function.alreadyNarrowedType
+        # Symfony registrar invocation count mismatch (optional dep)
+        - path: src/Adapters/Symfony/DependencyInjection/SymfonyRegistrar.php
+          identifier: arguments.count
+        # BridgeRequest merge() no-op
+        - path: src/Adapters/Symfony/Requests/Bridge/SymfonyBridgeRequest.php
+          identifier: method.resultUnused
+        # Authorization adapter: Authenticatable vs UserInterface
+        - path: src/Authorization/Adapters/Laravel/LaravelUserIdentity.php
+          identifier: argument.type
+        # Variable defined in conditional branches
+        - identifier: variable.undefined
+        # Instanceof always true in bridge code
+        - identifier: instanceof.alwaysTrue
+        # Unused return type in service layer
+        - identifier: return.unusedType
+        # Package config files use env() by design — they are published to the app's config/ directory
+        - identifier: larastan.noEnvCallsOutsideOfConfig

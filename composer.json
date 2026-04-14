@@ -1,0 +1,123 @@
+{
+	"name": "zoltasoft/http",
+	"description": "Domain-driven HTTP framework for PHP 8.2+ with attribute-based routing, automatic request validation, DTO mapping, standardized response shaping, and built-in authorization. First-class Laravel and Symfony adapters.",
+	"type": "library",
+	"license": "proprietary",
+	"keywords": [
+		"zolta",
+		"zolta-http",
+		"api-framework",
+		"attribute-routing",
+		"request-validation",
+		"dto-mapping",
+		"response-shaping",
+		"authorization",
+		"ddd",
+		"hexagonal-architecture",
+		"php",
+		"laravel",
+		"symfony"
+	],
+	"authors": [
+		{
+			"name": "Redouane Taleb",
+			"homepage": "https://github.com/redouane-taleb"
+		}
+	],
+	"require": {
+		"php": "^8.2",
+		"psr/container": "^2.0",
+		"symfony/process": "^7.3",
+		"symfony/serializer": "^7.3",
+		"symfony/property-access": "^7.3",
+		"symfony/property-info": "^7.3",
+		"zoltasoft/forge": "*"
+	},
+	"require-dev": {
+		"mockery/mockery": "^1.6",
+		"orchestra/testbench": "^10.6",
+		"phpunit/phpunit": "^11.5",
+		"laravel/pint": "^1.26",
+		"phpstan/phpstan": "^2.1",
+		"larastan/larastan": "^3.8",
+		"phpmd/phpmd": "^2.15",
+		"rector/rector": "^2.2"
+	},
+	"repositories": [
+		{
+			"type": "path",
+			"url": "../forge",
+			"options": {
+				"symlink": true
+			}
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Zolta\\Http\\Controller\\": "src/Controller/",
+			"Zolta\\Http\\Controller\\Laravel\\": "src/Controller/Adapters/Laravel/",
+			"Zolta\\Http\\Exceptions\\": "src/Exceptions/",
+			"Zolta\\Http\\Exceptions\\Laravel\\": "src/Exceptions/Adapters/Laravel/",
+			"Zolta\\Http\\Service\\": "src/Service/",
+			"Zolta\\Http\\Service\\Laravel\\": "src/Service/Adapters/Laravel/",
+			"Zolta\\Http\\Authorization\\": "src/Authorization/",
+			"Zolta\\Http\\Authorization\\Laravel\\": "src/Authorization/Adapters/Laravel/",
+			"Zolta\\Http\\Authorization\\Symfony\\": "src/Authorization/Adapters/Symfony/",
+			"Zolta\\Http\\Router\\": "src/Router/",
+			"Zolta\\Http\\Router\\Laravel\\": "src/Router/Adapters/Laravel/",
+			"Zolta\\Http\\Request\\": "src/Request/",
+			"Zolta\\Http\\Request\\Laravel\\": "src/Request/Adapters/Laravel/",
+			"Zolta\\Http\\Response\\": "src/Response/",
+			"Zolta\\Http\\Response\\Laravel\\": "src/Response/Adapters/Laravel/",
+			"Zolta\\Http\\Symfony\\": "src/Adapters/Symfony/",
+            "Zolta\\Http\\Support\\": "src/Support/"
+		},
+        "files": [
+            "src/Support/helpers.php"
+        ]
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Zolta\\Tests\\": "tests/"
+		}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Zolta\\Http\\Service\\Laravel\\Providers\\ZoltaHttpServiceProvider",
+				"Zolta\\Http\\Router\\Laravel\\Providers\\ZoltaRouterServiceProvider",
+				"Zolta\\Http\\Request\\Laravel\\Providers\\ZoltaRequestServiceProvider",
+				"Zolta\\Http\\Authorization\\Laravel\\Providers\\ZoltaAuthorizationServiceProvider"
+			]
+		},
+		"zolta-framework-adapter": [
+			"Zolta\\Http\\Service\\Laravel\\LaravelHttpAdapter",
+			"Zolta\\Http\\Router\\Laravel\\LaravelRouterAdapter",
+			"Zolta\\Http\\Request\\Laravel\\LaravelRequestAdapter",
+			"Zolta\\Http\\Response\\Laravel\\LaravelResponseAdapter"
+		]
+	},
+	"scripts": {
+		"cache-zolta-maps": [
+			"@php artisan zolta:routes:cache --quiet || echo \"Zolta: routes cache skipped (Laravel app not fully set up yet)\""
+		],
+		"test": "APP_SERVICES_CACHE=/tmp/zolta-http-services.php APP_PACKAGES_CACHE=/tmp/zolta-http-packages.php APP_CONFIG_CACHE=/tmp/zolta-http-config.php APP_ROUTES_CACHE=/tmp/zolta-http-routes.php APP_EVENTS_CACHE=/tmp/zolta-http-events.php PHPUNIT_RESULT_CACHE=/tmp/zolta-http-phpunit.result.cache phpunit -c phpunit.xml",
+		"test:unit": "APP_SERVICES_CACHE=/tmp/zolta-http-services.php APP_PACKAGES_CACHE=/tmp/zolta-http-packages.php APP_CONFIG_CACHE=/tmp/zolta-http-config.php APP_ROUTES_CACHE=/tmp/zolta-http-routes.php APP_EVENTS_CACHE=/tmp/zolta-http-events.php PHPUNIT_RESULT_CACHE=/tmp/zolta-http-phpunit.result.cache phpunit -c phpunit.xml --testsuite Unit",
+		"test:integration": "APP_SERVICES_CACHE=/tmp/zolta-http-services.php APP_PACKAGES_CACHE=/tmp/zolta-http-packages.php APP_CONFIG_CACHE=/tmp/zolta-http-config.php APP_ROUTES_CACHE=/tmp/zolta-http-routes.php APP_EVENTS_CACHE=/tmp/zolta-http-events.php PHPUNIT_RESULT_CACHE=/tmp/zolta-http-phpunit.result.cache phpunit -c phpunit.xml --testsuite Integration",
+		"lint": "vendor/bin/pint",
+		"lint:test": "vendor/bin/pint --test",
+		"analyse": "APP_SERVICES_CACHE=/tmp/zolta-http-services.php APP_PACKAGES_CACHE=/tmp/zolta-http-packages.php APP_CONFIG_CACHE=/tmp/zolta-http-config.php APP_ROUTES_CACHE=/tmp/zolta-http-routes.php APP_EVENTS_CACHE=/tmp/zolta-http-events.php vendor/bin/phpstan analyse",
+		"rector": "vendor/bin/rector process --dry-run",
+		"rector:fix": "vendor/bin/rector process",
+		"md": "HOME=/tmp PDEPEND_CACHE_DIR=/tmp/pdepend-cache vendor/bin/phpmd src text phpmd.xml --exclude 'src/Adapters/Symfony/Console/Command/*'",
+		"qa": [
+			"@lint:test",
+			"@analyse",
+			"@md",
+			"@rector",
+			"@test"
+		]
+	}
+}
