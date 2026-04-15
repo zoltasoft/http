@@ -119,14 +119,14 @@ final class HttpQueryOptions
         }
 
         if (is_string($value)) {
-            return array_values(array_filter(array_map(trim(...), explode(',', $value)), static fn($item): bool => $item !== ''));
+            return array_values(array_filter(array_map(trim(...), explode(',', $value)), static fn ($item): bool => $item !== ''));
         }
 
         if (is_array($value)) {
-            return array_values(array_filter(array_map(trim(...), $value), static fn(string $item): bool => $item !== ''));
+            return array_values(array_filter(array_map(trim(...), $value), static fn (string $item): bool => $item !== ''));
         }
 
-        return array_values(array_filter([(string) $value], static fn(string $item): bool => $item !== ''));
+        return array_values(array_filter([(string) $value], static fn (string $item): bool => $item !== ''));
     }
 
     private function __construct() {}

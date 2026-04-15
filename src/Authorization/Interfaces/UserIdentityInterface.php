@@ -36,8 +36,6 @@ interface UserIdentityInterface
     /**
      * Optional method to retrieve the domain user object.
      * Framework adapters may call this if available to get the actual user model.
-     *
-     * @return mixed
      */
     public function getDomainUser(): mixed;
 }

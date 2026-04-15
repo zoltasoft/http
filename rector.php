@@ -17,31 +17,31 @@ return static function (RectorConfig $rectorConfig): void {
     // 1) Target directories
     // ----------------------------------------------
     $rectorConfig->paths([
-        __DIR__ . '/src',
+        __DIR__.'/src',
     ]);
 
     // ----------------------------------------------
     // 2) Areas Rector must never touch
     // ----------------------------------------------
     $rectorConfig->skip([
-        __DIR__ . '/vendor',
+        __DIR__.'/vendor',
 
         // Dynamic framework bridge patterns (class_alias at runtime)
-        __DIR__ . '/src/Controller/Controller.php',
-        __DIR__ . '/src/Request/BaseRequest.php',
+        __DIR__.'/src/Controller/Controller.php',
+        __DIR__.'/src/Request/BaseRequest.php',
 
         // Tests must never be refactored
-        __DIR__ . '/tests',
+        __DIR__.'/tests',
 
         // Keep bridge hooks visible to traits
         PrivatizeFinalClassMethodRector::class => [
-            __DIR__ . '/src/Request/Bridge/BridgeRequest.php',
+            __DIR__.'/src/Request/Bridge/BridgeRequest.php',
         ],
 
         // Keep setFactory callables as arrays for phpstan compatibility
         ArrayToFirstClassCallableRector::class => [
-            __DIR__ . '/src/Adapters/Symfony/DependencyInjection/Registrar/BusRegistrar.php',
-            __DIR__ . '/src/Adapters/Symfony/DependencyInjection/Registrar/CqrsMapRegistrar.php',
+            __DIR__.'/src/Adapters/Symfony/DependencyInjection/Registrar/BusRegistrar.php',
+            __DIR__.'/src/Adapters/Symfony/DependencyInjection/Registrar/CqrsMapRegistrar.php',
         ],
     ]);
 

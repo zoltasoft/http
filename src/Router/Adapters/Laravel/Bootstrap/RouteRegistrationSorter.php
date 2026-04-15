@@ -41,7 +41,7 @@ final class RouteRegistrationSorter
             return self::compareUris($uriA, $uriB);
         });
 
-        return array_values($routes);
+        return $routes;
     }
 
     /**
@@ -120,7 +120,7 @@ final class RouteRegistrationSorter
         }
 
         return array_values(
-            array_filter(explode('/', $trimmed), fn($s) => $s !== '')
+            array_filter(explode('/', $trimmed), fn($s): bool => $s !== '')
         );
     }
 
@@ -139,7 +139,7 @@ final class RouteRegistrationSorter
     {
         return count(array_filter(
             self::segments($uri),
-            fn($seg) => ! self::isDynamic($seg)
+            fn(string $seg): bool => ! self::isDynamic($seg)
         ));
     }
 
@@ -150,7 +150,7 @@ final class RouteRegistrationSorter
     {
         return count(array_filter(
             self::segments($uri),
-            fn($seg) => str_contains($seg, '?')
+            fn(string $seg): bool => str_contains($seg, '?')
         ));
     }
 
@@ -161,7 +161,7 @@ final class RouteRegistrationSorter
     {
         return count(array_filter(
             self::segments($uri),
-            fn($seg) => preg_match('/\{(any|slug|path|catchAll).*}/i', $seg)
+            fn(string $seg): int|false => preg_match('/\{(any|slug|path|catchAll).*}/i', $seg)
         ));
     }
 }

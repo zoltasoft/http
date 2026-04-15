@@ -129,10 +129,10 @@ class WatchRoutesCommand extends Command
 
     private function displayWatchedPaths(): void
     {
-        $this->info('Watching ' . count($this->watchedPaths) . ' director' . (count($this->watchedPaths) === 1 ? 'y' : 'ies') . ':');
+        $this->info('Watching '.count($this->watchedPaths).' director'.(count($this->watchedPaths) === 1 ? 'y' : 'ies').':');
 
         foreach ($this->watchedPaths as $watchedPath) {
-            $this->line('   - ' . $this->toRelativePath($watchedPath));
+            $this->line('   - '.$this->toRelativePath($watchedPath));
         }
 
         $this->line('');
@@ -260,7 +260,7 @@ class WatchRoutesCommand extends Command
     {
         try {
             $startTime = microtime(true);
-            $process = $this->runCacheProcess(['zolta:routes:cache', '--file=' . $path]);
+            $process = $this->runCacheProcess(['zolta:routes:cache', '--file='.$path]);
             $duration = number_format((microtime(true) - $startTime) * 1000, 1);
 
             if ($process->isSuccessful()) {
@@ -327,13 +327,13 @@ class WatchRoutesCommand extends Command
         $errorOutput = trim($process->getErrorOutput());
 
         if ($forceError && $errorOutput !== '') {
-            $this->line('   ' . $errorOutput);
+            $this->line('   '.$errorOutput);
 
             return;
         }
 
         if ($this->getOutput()->isVerbose() && $output !== '') {
-            $this->line('   ' . $output);
+            $this->line('   '.$output);
         }
 
         if ($forceError && $output === '' && $errorOutput === '') {
@@ -422,8 +422,8 @@ class WatchRoutesCommand extends Command
     private function toRelativePath(string $absolute): string
     {
         $base = base_path();
-        if (Str::startsWith($absolute, $base . '/')) {
-            return Str::after($absolute, $base . '/');
+        if (Str::startsWith($absolute, $base.'/')) {
+            return Str::after($absolute, $base.'/');
         }
 
         return $absolute;

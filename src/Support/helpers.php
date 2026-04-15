@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Zolta\Http\Authorization\Interfaces\UserIdentityInterface;
 use Zolta\Http\Authorization\Identity;
+use Zolta\Http\Authorization\Interfaces\UserIdentityInterface;
 
 if (! function_exists('identity')) {
     /**

@@ -119,13 +119,13 @@ final class AttributeRouteLoader
 
         [$namespace, $class] = $info;
         if ($namespace === null) {
-            $relative = Str::after(str_replace('\\', '/', $filePath), str_replace('\\', '/', app_path()) . '/');
+            $relative = Str::after(str_replace('\\', '/', $filePath), str_replace('\\', '/', app_path()).'/');
             $segments = array_filter(explode('/', $relative));
             array_pop($segments);
-            $namespace = 'App' . ($segments !== [] ? '\\' . implode('\\', $segments) : '');
+            $namespace = 'App'.($segments !== [] ? '\\'.implode('\\', $segments) : '');
         }
 
-        return trim($namespace . '\\' . $class, '\\');
+        return trim($namespace.'\\'.$class, '\\');
     }
 
     /**
@@ -244,12 +244,12 @@ final class AttributeRouteLoader
 
             [$path, $methods, $middleware, $name, $authorized] = self::normalizeRouteArguments($attr['arguments']);
 
-            $uri = '/' . trim((string) $path, '/');
+            $uri = '/'.trim((string) $path, '/');
             $methodsStr = self::phpArray($methods);
             $middlewareStr = self::phpArray($middleware);
             $nameStr = var_export($name ?? self::routeName($reflectionClass->getName()), true);
 
-            $authorizedDefaults = $authorized !== [] ? "\n    ->defaults('authorized', " . self::phpArray($authorized) . ')' : '';
+            $authorizedDefaults = $authorized !== [] ? "\n    ->defaults('authorized', ".self::phpArray($authorized).')' : '';
 
             $code = <<<PHP
 Route::match({$methodsStr}, '{$uri}', [\Zolta\Http\Router\Laravel\Bootstrap\AutoInvokeProxyController::class, '__invoke'])
@@ -285,12 +285,12 @@ PHP;
 
                 [$path, $methods, $middleware, $name, $authorized] = self::normalizeRouteArguments($attr['arguments']);
 
-                $uri = '/' . trim((string) $path, '/');
+                $uri = '/'.trim((string) $path, '/');
                 $methodsStr = self::phpArray($methods);
                 $middlewareStr = self::phpArray($middleware);
-                $nameStr = var_export($name ?? self::routeName($reflectionClass->getName() . '.' . $reflectionMethod->getName()), true);
+                $nameStr = var_export($name ?? self::routeName($reflectionClass->getName().'.'.$reflectionMethod->getName()), true);
 
-                $authorizedDefaults = $authorized !== [] ? "\n    ->defaults('authorized', " . self::phpArray($authorized) . ')' : '';
+                $authorizedDefaults = $authorized !== [] ? "\n    ->defaults('authorized', ".self::phpArray($authorized).')' : '';
 
                 $code = <<<PHP
 Route::match({$methodsStr}, '{$uri}', [\\Zolta\\Http\\Router\\Laravel\\Bootstrap\\AutoInvokeProxyController::class, '__invoke'])
@@ -350,12 +350,12 @@ PHP;
 
         $middleware = array_values(array_unique(array_filter(
             array_map(
-                static fn(string $mw): string =>
+                static fn (string $mw): string =>
                 // Normalize generic auth to the Sanctum guard used for APIs.
                 $mw === 'auth' ? 'auth:sanctum' : $mw,
                 array_map(strval(...), $middleware)
             ),
-            static fn(string $v): bool => $v !== ''
+            static fn (string $v): bool => $v !== ''
         )));
 
         return [$path, $methods, $middleware, $name, (array) $authorized];
@@ -405,11 +405,11 @@ PHP;
         $appPath = str_replace('\\', '/', app_path());
         $normalized = str_replace('\\', '/', $filePath);
 
-        if (! Str::startsWith($normalized, $appPath . '/')) {
+        if (! Str::startsWith($normalized, $appPath.'/')) {
             return false;
         }
 
-        $relative = Str::after($normalized, $appPath . '/');
+        $relative = Str::after($normalized, $appPath.'/');
         foreach (self::excludeRegexes() as $regex) {
             if (preg_match($regex, $relative) === 1) {
                 return false;
@@ -452,7 +452,7 @@ PHP;
         $pattern = preg_quote($pattern, '/');
         $pattern = str_replace(['\*\*', '\*', '\?'], ['.*', '[^/]*', '.'], $pattern);
 
-        return '/^' . $pattern . '$/i';
+        return '/^'.$pattern.'$/i';
     }
 
     /**

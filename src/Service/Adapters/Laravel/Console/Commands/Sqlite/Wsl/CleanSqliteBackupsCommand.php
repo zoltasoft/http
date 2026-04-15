@@ -25,8 +25,8 @@ class CleanSqliteBackupsCommand extends Command
 
         // Get all backups sorted by modified time (descending)
         $backups = collect($filesystem->files($backupDir))
-            ->filter(fn($file): bool => str_ends_with((string) $file->getFilename(), '.sqlite'))
-            ->sortByDesc(fn($file) => $file->getMTime())
+            ->filter(fn ($file): bool => str_ends_with((string) $file->getFilename(), '.sqlite'))
+            ->sortByDesc(fn ($file) => $file->getMTime())
             ->values();
 
         $count = $backups->count();
@@ -43,7 +43,7 @@ class CleanSqliteBackupsCommand extends Command
             $filesystem->delete($file->getPathname());
         }
 
-        $this->info('🧹 Cleaned up ' . $toDelete->count() . ' old backup(s).');
+        $this->info('🧹 Cleaned up '.$toDelete->count().' old backup(s).');
         $this->info("💾 Kept the 3 most recent backups in: $backupDir");
 
         return Command::SUCCESS;

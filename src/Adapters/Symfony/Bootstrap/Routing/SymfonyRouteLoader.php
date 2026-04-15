@@ -55,7 +55,7 @@ final class SymfonyRouteLoader extends Loader
     public function buildCollection(?array $directories = null): RouteCollection
     {
         $routeCollection = new RouteCollection;
-        $dirs = $directories ?? ($this->paths ?? [$this->projectDir ? $this->projectDir.'/src' : getcwd().'/src']);
+        $dirs = $directories ?? ($this->paths ?? [$this->projectDir ? $this->projectDir . '/src' : getcwd() . '/src']);
         $files = MapScanner::files($dirs);
 
         foreach ($files as $file) {
@@ -148,7 +148,7 @@ final class SymfonyRouteLoader extends Loader
         $name = $routeAttribute->name ?? $this->routeName($class, $method);
         $middleware = (array) $routeAttribute->middleware;
         $auth = $routeAttribute->auth;
-        $authorized = $routeAttribute->authorized ?? [];
+        $authorized = $routeAttribute->authorized;
 
         if ($auth !== null) {
             $authMiddleware = $auth === true ? 'auth' : (string) $auth;
@@ -159,7 +159,7 @@ final class SymfonyRouteLoader extends Loader
 
         $middleware = array_values(array_unique(array_filter(
             array_map(strval(...), $middleware),
-            static fn (string $v): bool => $v !== ''
+            static fn(string $v): bool => $v !== ''
         )));
 
         $effectivePrefix = $routeAttribute->prefix;
@@ -175,7 +175,7 @@ final class SymfonyRouteLoader extends Loader
         $route = new Route($path, [
             'target' => $class,
             'target_method' => $method,
-            '_controller' => SymfonyProxyController::class.'::__invoke',
+            '_controller' => SymfonyProxyController::class . '::__invoke',
             'middleware' => $middleware,
             'authorized' => $authorized,
         ]);
@@ -187,14 +187,14 @@ final class SymfonyRouteLoader extends Loader
     private function normalizePath(?string $prefix, string $path): string
     {
         $prefix ??= '';
-        $full = trim($prefix.'/'.ltrim($path, '/'), '/');
+        $full = trim($prefix . '/' . ltrim($path, '/'), '/');
 
-        return '/'.$full;
+        return '/' . $full;
     }
 
     private function routeName(string $class, string $method): string
     {
-        return strtolower(str_replace('\\', '.', $class)).'.'.$method;
+        return strtolower(str_replace('\\', '.', $class)) . '.' . $method;
     }
 
     /**

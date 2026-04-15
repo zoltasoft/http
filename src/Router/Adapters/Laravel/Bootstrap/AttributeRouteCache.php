@@ -117,7 +117,7 @@ final class AttributeRouteCache
                 $this->clearLaravelRouteCache();
             }
             $duration = number_format((microtime(true) - $startedAt) * 1000, 1);
-            Log::info('✅ Cached ' . count($allRoutes) . " attribute routes in {$duration} ms.");
+            Log::info('✅ Cached '.count($allRoutes)." attribute routes in {$duration} ms.");
         }
 
         return [
@@ -195,7 +195,7 @@ final class AttributeRouteCache
 
             if ($this->verboseLogging()) {
                 $duration = number_format((microtime(true) - $startedAt) * 1000, 1);
-                Log::info("✅ Updated route cache from {$relativePath} ({$duration} ms, " . count($routesForFile) . ' routes in file)');
+                Log::info("✅ Updated route cache from {$relativePath} ({$duration} ms, ".count($routesForFile).' routes in file)');
             }
         }
 
@@ -386,13 +386,13 @@ PHP;
         }
 
         if ($webRoutes !== []) {
-            $sections[] = "Route::middleware('web')->group(function (): void {\n" .
-                $this->indent(implode("\n\n", $webRoutes)) . "\n});";
+            $sections[] = "Route::middleware('web')->group(function (): void {\n".
+                $this->indent(implode("\n\n", $webRoutes))."\n});";
         }
 
         if ($apiRoutes !== []) {
-            $sections[] = "Route::middleware('api')->prefix('api')->group(function (): void {\n" .
-                $this->indent(implode("\n\n", $apiRoutes)) . "\n});";
+            $sections[] = "Route::middleware('api')->prefix('api')->group(function (): void {\n".
+                $this->indent(implode("\n\n", $apiRoutes))."\n});";
         }
 
         $body = implode("\n\n", $sections);
@@ -502,14 +502,14 @@ PHP;
             'routes_by_file' => $this->routesByFile,
         ];
 
-        $contents = "<?php\n\nreturn " . var_export($payload, true) . ";\n";
+        $contents = "<?php\n\nreturn ".var_export($payload, true).";\n";
         $this->writeFile($this->manifestFile, $contents);
     }
 
     private function indent(string $body): string
     {
         $lines = explode("\n", $body);
-        $lines = array_map(static fn(string $line): string => '    ' . $line, $lines);
+        $lines = array_map(static fn (string $line): string => '    '.$line, $lines);
 
         return implode("\n", $lines);
     }
@@ -550,8 +550,8 @@ PHP;
         $absolute = str_replace('\\', '/', $absolute);
         $base = str_replace('\\', '/', base_path());
 
-        if (Str::startsWith($absolute, $base . '/')) {
-            return Str::after($absolute, $base . '/');
+        if (Str::startsWith($absolute, $base.'/')) {
+            return Str::after($absolute, $base.'/');
         }
 
         return ltrim($absolute, '/');
@@ -595,7 +595,7 @@ PHP;
         $configured[] = 'package:discover';
 
         $patterns = array_filter(array_unique(array_map(
-            static fn($value): string => (string) $value,
+            static fn ($value): string => (string) $value,
             $configured
         )));
 
@@ -621,7 +621,7 @@ PHP;
 
         $arguments = array_values(array_filter(
             $argv,
-            static fn($value): bool => is_string($value) && $value !== ''
+            static fn ($value): bool => is_string($value) && $value !== ''
         ));
 
         if ($arguments === []) {

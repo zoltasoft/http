@@ -18,12 +18,12 @@ final class ZoltaAuthorizationServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             AuthorizationServiceInterface::class,
-            fn($app): LaravelAuthorizationService => new LaravelAuthorizationService($app->make(Gate::class))
+            fn ($app): LaravelAuthorizationService => new LaravelAuthorizationService($app->make(Gate::class))
         );
 
         $this->app->bind(
             UserResolverInterface::class,
-            fn($app): LaravelUserResolver => new LaravelUserResolver
+            fn ($app): LaravelUserResolver => new LaravelUserResolver
         );
     }
 
