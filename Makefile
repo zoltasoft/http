@@ -12,9 +12,9 @@ SCRIPT ?= qa
 # The monorepo script signature: scripts/run-zolta-http-package-tests.sh <pkg-dir> <script> [keep]
 run:
 	@echo "Checking for monorepo runner..."
-	@if [ -x ../../scripts/run-zolta-http-package-tests.sh ]; then \
+	@if [ -x scripts/run-zolta-http-package-tests.sh ]; then \
 		echo "Delegating to monorepo scripts/run-zolta-http-package-tests.sh"; \
-		../../scripts/run-zolta-http-package-tests.sh . $(SCRIPT) $(KEEP); \
+		scripts/run-zolta-http-package-tests.sh . $(SCRIPT) $(KEEP); \
 	else \
 		echo "Monorepo runner not found — installing locally and running $(SCRIPT)"; \
 		composer install --no-interaction --prefer-dist --ansi; \
