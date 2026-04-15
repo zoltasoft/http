@@ -15,8 +15,17 @@ use Zolta\Http\Service\Attributes\Service as ServiceAttr;
  */
 final class RouteMetadataResolver
 {
+    /** @var array<string, RouteMetadata> */
+    private static array $resolvedCache = [];
+
     public function resolve(string $controllerClass, string $method): RouteMetadata
     {
+        $cacheKey = $controllerClass . '::' . $method;
+
+        if (isset(self::$resolvedCache[$cacheKey])) {
+            return self::$resolvedCache[$cacheKey];
+        }
+
         $classAttrs = ReflectionCache::getClassAttributes($controllerClass);
         $methodAttrs = ReflectionCache::getMethodAttributes($controllerClass, $method);
 
@@ -24,7 +33,7 @@ final class RouteMetadataResolver
         $service = $this->findAttr($classAttrs, $methodAttrs, ServiceAttr::class);
         $response = $this->findAttr($classAttrs, $methodAttrs, ResponseAttr::class);
 
-        return new RouteMetadata(
+        $metadata = new RouteMetadata(
             controllerClass: $controllerClass,
             method: $method,
             requestClass: $request['arguments'][0] ?? null,
@@ -34,6 +43,15 @@ final class RouteMetadataResolver
             status: $service['arguments'][2] ?? 200,
             message: $service['arguments'][1] ?? 'Success.',
         );
+
+        self::$resolvedCache[$cacheKey] = $metadata;
+
+        return $metadata;
+    }
+
+    public static function clearCache(): void
+    {
+        self::$resolvedCache = [];
     }
 
     private function findAttr(array $classAttrs, array $methodAttrs, string $target): ?array
