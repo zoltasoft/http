@@ -4,16 +4,17 @@
 	"type": "library",
 	"license": "proprietary",
 	"keywords": [
-		"zolta",
-		"zolta-http",
-		"api-framework",
+		"zoltasoft",
+		"http",
+		"api",
+		"routing",
 		"attribute-routing",
 		"request-validation",
-		"dto-mapping",
+		"dto",
+		"response",
 		"response-shaping",
 		"authorization",
-		"ddd",
-		"hexagonal-architecture",
+		"adapter",
 		"php",
 		"laravel",
 		"symfony"
@@ -21,7 +22,7 @@
 	"authors": [
 		{
 			"name": "Redouane Taleb",
-			"homepage": "https://github.com/redouane-taleb"
+			"homepage": "https://github.com/redouaneT"
 		}
 	],
 	"require": {
