@@ -4,11 +4,11 @@ set -uo pipefail
 # Usage:
 #   ./scripts/run-package-tests.sh <package-dir> <script> [keep]
 # Examples:
-#   ./scripts/run-package-tests.sh packages/zolta-http qa
-#   ./scripts/run-package-tests.sh packages/zolta-http test keep
+#   ./scripts/run-package-tests.sh packages/http qa
+#   ./scripts/run-package-tests.sh packages/http test keep
 # If third arg is 'keep' the package's vendor directory is preserved.
 
-PKG_DIR=${1:-packages/zolta-http}
+PKG_DIR=${1:-packages/http}
 SCRIPT=${2:-phpunit}
 KEEP_VENDOR=${3:-}
 EXIT_CODE=0
