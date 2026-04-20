@@ -92,8 +92,11 @@ final class RequestMapper
         }
 
         if (! array_key_exists($fieldName, $data)) {
-            if ($reflectionParameter->isOptional()) {
+            if ($reflectionParameter->isDefaultValueAvailable()) {
                 return $reflectionParameter->getDefaultValue();
+            }
+            if ($reflectionParameter->allowsNull()) {
+                return null;
             }
             throw new ValidationException([$fieldName => "The field {$fieldName} is required."]);
         }

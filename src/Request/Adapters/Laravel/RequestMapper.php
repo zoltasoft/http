@@ -38,6 +38,16 @@ final class RequestMapper
             }
         }
 
+        // Merge additional contextual data declared by the request (e.g. authenticated
+        // user ID, tenant). Validated values take precedence — withData() only fills
+        // keys that are not already present.
+        if (method_exists($formRequest, 'withData')) {
+            $extra = $formRequest->withData();
+            if (is_array($extra) && $extra !== []) {
+                $data = array_merge($extra, $data);
+            }
+        }
+
         if ($callback) {
             $data = $callback($data);
         }

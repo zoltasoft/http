@@ -35,10 +35,10 @@ interface AuthorizationMatrixInterface
     /**
      * Extract permissions from a user object.
      *
-     * @param  UserInterface|null  $user  User to extract permissions from
+     * @param  object|null  $user  User to extract permissions from (UserInterface, framework model, or any object)
      * @return array Permission strings
      */
-    public function permissionsForUser(?UserInterface $user): array;
+    public function permissionsForUser(?object $user): array;
 
     /**
      * Set the user resolver for finding the current user.

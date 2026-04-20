@@ -253,7 +253,7 @@ final class AuthorizationMatrix
      *
      * @return list<string>
      */
-    public static function permissionsForUser(?UserInterface $user): array
+    public static function permissionsForUser(?object $user): array
     {
         if (! is_object($user)) {
             return [];

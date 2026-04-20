@@ -118,6 +118,20 @@ class BaseRequest extends FrameworkBoundBaseRequest implements CoreRequestContra
     }
 
     /**
+     * Additional data to merge into the validated payload before DTO mapping.
+     *
+     * Override in concrete requests to inject contextual values (e.g. authenticated
+     * user ID, tenant, resolved route parameters) that are not part of the HTTP
+     * body but should appear in the DTO.
+     *
+     * @return array<string,mixed>
+     */
+    public function withData(): array
+    {
+        return [];
+    }
+
+    /**
      * Proxy to the framework-bound implementation so static analysers see concrete methods.
      *
      * @param  string|array<int|string, mixed>  $action
