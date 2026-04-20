@@ -55,12 +55,12 @@ $runtimeClass = $implementation !== null && class_exists($implementation)
     ? $implementation
     : FrameworkBaseRequestFallback::class;
 
-$implClass = __NAMESPACE__.'\\FrameworkBaseRequestImplementation';
+$implClass = __NAMESPACE__ . '\\FrameworkBaseRequestImplementation';
 if (! class_exists($implClass, false)) {
     class_alias($runtimeClass, $implClass);
 }
 
-if (! class_exists(__NAMESPACE__.'\\FrameworkBoundBaseRequest', false)) {
+if (! class_exists(__NAMESPACE__ . '\\FrameworkBoundBaseRequest', false)) {
     abstract class FrameworkBoundBaseRequest extends FrameworkBaseRequestImplementation implements CoreRequestContract {}
 }
 
