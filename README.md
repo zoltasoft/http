@@ -310,5 +310,4 @@ Full documentation is available in the [`docs/`](./docs/) directory, organized f
 
 ## License
 
-**Proprietary — © 2026 Redouane Taleb**
-Unauthorized copying, modification, or distribution is prohibited.
+[MIT](LICENSE) © 2026 Redouane Taleb

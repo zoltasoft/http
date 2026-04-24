@@ -2,7 +2,7 @@
 	"name": "zolta/http",
 	"description": "Domain-driven HTTP framework for PHP 8.2+ with attribute-based routing, automatic request validation, DTO mapping, standardized response shaping, and built-in authorization. First-class Laravel and Symfony adapters.",
 	"type": "library",
-	"license": "proprietary",
+	"license": "MIT",
 	"keywords": [
 		"zolta",
 		"http",
