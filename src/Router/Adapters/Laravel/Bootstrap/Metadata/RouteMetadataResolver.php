@@ -20,7 +20,7 @@ final class RouteMetadataResolver
 
     public function resolve(string $controllerClass, string $method): RouteMetadata
     {
-        $cacheKey = $controllerClass . '::' . $method;
+        $cacheKey = $controllerClass.'::'.$method;
 
         if (isset(self::$resolvedCache[$cacheKey])) {
             return self::$resolvedCache[$cacheKey];
@@ -33,7 +33,7 @@ final class RouteMetadataResolver
         $service = $this->findAttr($classAttrs, $methodAttrs, ServiceAttr::class);
         $response = $this->findAttr($classAttrs, $methodAttrs, ResponseAttr::class);
 
-        $metadata = new RouteMetadata(
+        $routeMetadata = new RouteMetadata(
             controllerClass: $controllerClass,
             method: $method,
             requestClass: $request['arguments'][0] ?? null,
@@ -44,9 +44,9 @@ final class RouteMetadataResolver
             message: $service['arguments'][1] ?? 'Success.',
         );
 
-        self::$resolvedCache[$cacheKey] = $metadata;
+        self::$resolvedCache[$cacheKey] = $routeMetadata;
 
-        return $metadata;
+        return $routeMetadata;
     }
 
     public static function clearCache(): void

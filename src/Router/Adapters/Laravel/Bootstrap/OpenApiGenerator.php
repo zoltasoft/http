@@ -8,8 +8,6 @@ use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionProperty;
 use Symfony\Component\Finder\Finder;
-use Zolta\Http\Request\Attributes\Request as RequestAttr;
-use Zolta\Http\Response\Attributes\Response as ResponseAttr;
 use Zolta\Http\Router\Attributes\Route as RouteAttr;
 use Zolta\Http\Router\Cache\ReflectionCache;
 use Zolta\Http\Router\Laravel\Bootstrap\Metadata\RouteMetadataResolver;
@@ -60,10 +58,8 @@ final class OpenApiGenerator
      */
     public static function generateForController(string $controllerClass, ?string $sourceFile = null): array
     {
-        if (! class_exists($controllerClass)) {
-            if ($sourceFile !== null && is_file($sourceFile)) {
-                require_once $sourceFile;
-            }
+        if (! class_exists($controllerClass) && ($sourceFile !== null && is_file($sourceFile))) {
+            require_once $sourceFile;
         }
 
         if (! class_exists($controllerClass)) {
@@ -75,15 +71,15 @@ final class OpenApiGenerator
         $operations = [];
         $schemas = [];
 
-        foreach ($classAttributes as $attribute) {
-            if ($attribute['class'] !== RouteAttr::class) {
+        foreach ($classAttributes as $classAttribute) {
+            if ($classAttribute['class'] !== RouteAttr::class) {
                 continue;
             }
 
             $fragment = self::buildFragment(
                 controllerClass: $controllerClass,
                 targetMethod: '__invoke',
-                routeArguments: $attribute['arguments'],
+                routeArguments: $classAttribute['arguments'],
                 classAttributes: $classAttributes,
                 methodAttributes: [],
                 requestSourceFile: $sourceFile,
@@ -95,15 +91,15 @@ final class OpenApiGenerator
 
         foreach ($reflectionClass->getMethods() as $reflectionMethod) {
             $methodAttributes = ReflectionCache::getMethodAttributes($controllerClass, $reflectionMethod->getName());
-            foreach ($methodAttributes as $attribute) {
-                if ($attribute['class'] !== RouteAttr::class) {
+            foreach ($methodAttributes as $methodAttribute) {
+                if ($methodAttribute['class'] !== RouteAttr::class) {
                     continue;
                 }
 
                 $fragment = self::buildFragment(
                     controllerClass: $controllerClass,
                     targetMethod: $reflectionMethod->getName(),
-                    routeArguments: $attribute['arguments'],
+                    routeArguments: $methodAttribute['arguments'],
                     classAttributes: $classAttributes,
                     methodAttributes: $methodAttributes,
                     requestSourceFile: $sourceFile,
@@ -128,8 +124,8 @@ final class OpenApiGenerator
     public static function compileDocument(array $operations, array $schemas): array
     {
         $paths = [];
-        foreach ($operations as $entry) {
-            $paths[$entry['path']][$entry['method']] = $entry['operation'];
+        foreach ($operations as $operation) {
+            $paths[$operation['path']][$operation['method']] = $operation['operation'];
         }
 
         ksort($paths);
@@ -201,10 +197,10 @@ final class OpenApiGenerator
         ?string $requestSourceFile = null,
     ): array {
         $route = self::normalizeRouteArguments($routeArguments);
-        $metadata = (new RouteMetadataResolver)->resolve($controllerClass, $targetMethod);
+        $routeMetadata = (new RouteMetadataResolver)->resolve($controllerClass, $targetMethod);
         $doc = self::findMergedAttribute($classAttributes, $methodAttributes, DocAttr::class);
         $requestDetails = self::buildRequestDetails(
-            requestClass: $metadata->requestClass,
+            requestClass: $routeMetadata->requestClass,
             routePath: $route['path'],
             methods: $route['methods'],
         );
@@ -212,8 +208,8 @@ final class OpenApiGenerator
         $uri = self::normalizeRouteUri($route['path'], $route['middleware']);
         $schemas = [];
 
-        if ($metadata->resourceClass !== null && class_exists($metadata->resourceClass)) {
-            $schemas[self::shortClassName($metadata->resourceClass)] = self::classToSchema($metadata->resourceClass, true);
+        if ($routeMetadata->resourceClass !== null && class_exists($routeMetadata->resourceClass)) {
+            $schemas[self::shortClassName($routeMetadata->resourceClass)] = self::classToSchema($routeMetadata->resourceClass, true);
         }
 
         $operations = [];
@@ -230,9 +226,9 @@ final class OpenApiGenerator
                     httpMethod: $httpMethod,
                 ),
                 'responses' => self::buildResponses(
-                    status: $metadata->status,
-                    successMessage: $metadata->message,
-                    resourceClass: $metadata->resourceClass,
+                    status: $routeMetadata->status,
+                    successMessage: $routeMetadata->message,
+                    resourceClass: $routeMetadata->resourceClass,
                     authenticated: self::isAuthenticatedRoute($route['middleware']),
                     hasInput: $requestDetails['has_input'],
                 ),
@@ -316,7 +312,7 @@ final class OpenApiGenerator
         ];
     }
 
-    private static function instantiateRequestDescriptor(string $requestClass): object|null
+    private static function instantiateRequestDescriptor(string $requestClass): ?object
     {
         try {
             $reflectionClass = new ReflectionClass($requestClass);
@@ -331,7 +327,7 @@ final class OpenApiGenerator
         }
     }
 
-    private static function callRequestMethod(object|null $request, string $method, mixed $default): mixed
+    private static function callRequestMethod(?object $request, string $method, mixed $default): mixed
     {
         if ($request === null || ! method_exists($request, $method)) {
             return $default;
@@ -351,10 +347,10 @@ final class OpenApiGenerator
     private static function resolvePathParameters(array $pathPlaceholders, array $routeConfig): array
     {
         $parameters = [];
-        foreach ($pathPlaceholders as $placeholder) {
-            $config = (array) ($routeConfig[$placeholder] ?? []);
+        foreach ($pathPlaceholders as $pathPlaceholder) {
+            $config = (array) ($routeConfig[$pathPlaceholder] ?? []);
             $parameters[] = [
-                'name' => $placeholder,
+                'name' => $pathPlaceholder,
                 'in' => 'path',
                 'required' => true,
                 'schema' => self::schemaFromParameterConfig($config, ['type' => 'string']),
@@ -664,7 +660,7 @@ final class OpenApiGenerator
             return $schema;
         }
 
-        $schema['enum'] = array_values(array_filter(array_map('trim', explode(',', $parameters)), static fn (string $value): bool => $value !== ''));
+        $schema['enum'] = array_values(array_filter(array_map(trim(...), explode(',', $parameters)), static fn (string $value): bool => $value !== ''));
 
         return $schema;
     }
@@ -739,8 +735,8 @@ final class OpenApiGenerator
 
             preg_match_all('/[\'"](?P<key>[^\'"]+)[\'"]\s*=>\s*(?P<expr>[^,\n]+(?:\n(?!\s*[\'"]).*)*)/m', $source, $matches, PREG_SET_ORDER);
             foreach ($matches as $match) {
-                $key = trim((string) ($match['key'] ?? ''));
-                $expression = (string) ($match['expr'] ?? '');
+                $key = trim((string) $match['key']);
+                $expression = (string) $match['expr'];
                 if ($key === '') {
                     continue;
                 }
@@ -781,12 +777,12 @@ final class OpenApiGenerator
             if (is_string($ruleDefinition)) {
                 $parts = explode('|', $ruleDefinition);
             } elseif (is_array($ruleDefinition)) {
-                $parts = array_map(static fn (mixed $rule): string => self::normalizeRuleToken($rule), $ruleDefinition);
+                $parts = array_map(self::normalizeRuleToken(...), $ruleDefinition);
             } else {
                 $parts = [self::normalizeRuleToken($ruleDefinition)];
             }
 
-            $normalized[$field] = array_values(array_filter(array_map('trim', $parts), static fn (string $rule): bool => $rule !== ''));
+            $normalized[$field] = array_values(array_filter(array_map(trim(...), $parts), static fn (string $rule): bool => $rule !== ''));
         }
 
         return $normalized;
@@ -900,7 +896,7 @@ final class OpenApiGenerator
 
         return array_values(array_unique(array_map(
             static fn (string $placeholder): string => trim($placeholder, '?'),
-            $matches[1] ?? [],
+            $matches[1],
         )));
     }
 
@@ -930,7 +926,7 @@ final class OpenApiGenerator
     private static function normalizeRouteArguments(array $args): array
     {
         $path = (string) self::argument($args, ['path'], $args[0] ?? '');
-        $methods = array_values(array_map('strtoupper', (array) self::argument($args, ['methods'], $args[1] ?? ['GET'])));
+        $methods = array_values(array_map(strtoupper(...), (array) self::argument($args, ['methods'], $args[1] ?? ['GET'])));
 
         $middleware = self::argument($args, ['middleware', 'middlewares'], $args[2] ?? []);
         if (! is_array($middleware)) {
@@ -953,7 +949,7 @@ final class OpenApiGenerator
 
         $middleware = array_values(array_unique(array_map(
             static fn (string $value): string => $value === 'auth' ? 'auth:sanctum' : $value,
-            array_map('strval', $middleware),
+            array_map(strval(...), $middleware),
         )));
 
         return [
@@ -994,15 +990,15 @@ final class OpenApiGenerator
      */
     private static function findMergedAttribute(array $classAttributes, array $methodAttributes, string $target): ?array
     {
-        foreach ($methodAttributes as $attribute) {
-            if ($attribute['class'] === $target) {
-                return $attribute;
+        foreach ($methodAttributes as $methodAttribute) {
+            if ($methodAttribute['class'] === $target) {
+                return $methodAttribute;
             }
         }
 
-        foreach ($classAttributes as $attribute) {
-            if ($attribute['class'] === $target) {
-                return $attribute;
+        foreach ($classAttributes as $classAttribute) {
+            if ($classAttribute['class'] === $target) {
+                return $classAttribute;
             }
         }
 
@@ -1018,14 +1014,14 @@ final class OpenApiGenerator
         $unique = [];
         $seen = [];
 
-        foreach ($operations as $entry) {
-            $key = $entry['method'].' '.$entry['path'];
+        foreach ($operations as $operation) {
+            $key = $operation['method'].' '.$operation['path'];
             if (isset($seen[$key])) {
                 continue;
             }
 
             $seen[$key] = true;
-            $unique[] = $entry;
+            $unique[] = $operation;
         }
 
         return $unique;
@@ -1043,18 +1039,18 @@ final class OpenApiGenerator
         }
 
         $properties = [];
-        foreach ($reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
-            $properties[$property->getName()] = self::schemaFromReflectionType($property->getType());
+        foreach ($reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC) as $reflectionProperty) {
+            $properties[$reflectionProperty->getName()] = self::schemaFromReflectionType($reflectionProperty->getType());
         }
 
         $constructor = $reflectionClass->getConstructor();
         if ($constructor !== null && $constructor->getDeclaringClass()->getName() === $reflectionClass->getName()) {
-            foreach ($constructor->getParameters() as $parameter) {
-                if (isset($properties[$parameter->getName()])) {
+            foreach ($constructor->getParameters() as $reflectionParameter) {
+                if (isset($properties[$reflectionParameter->getName()])) {
                     continue;
                 }
 
-                $properties[$parameter->getName()] = self::schemaFromReflectionType($parameter->getType());
+                $properties[$reflectionParameter->getName()] = self::schemaFromReflectionType($reflectionParameter->getType());
             }
         }
 
@@ -1071,13 +1067,13 @@ final class OpenApiGenerator
     /**
      * @return array<string,mixed>
      */
-    private static function schemaFromReflectionType(?\ReflectionType $type): array
+    private static function schemaFromReflectionType(?\ReflectionType $reflectionType): array
     {
-        if (! $type instanceof ReflectionNamedType) {
+        if (! $reflectionType instanceof ReflectionNamedType) {
             return ['type' => 'object', 'additionalProperties' => true];
         }
 
-        return match (strtolower($type->getName())) {
+        return match (strtolower($reflectionType->getName())) {
             'string' => ['type' => 'string'],
             'int', 'integer' => ['type' => 'integer'],
             'float', 'double' => ['type' => 'number'],

@@ -462,6 +462,7 @@ final class OpenApiDocumentationCache
             $absolutePath = base_path($relativePath);
             if (! is_file($absolutePath)) {
                 unset($this->files[$relativePath]);
+
                 continue;
             }
 

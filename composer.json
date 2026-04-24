@@ -32,7 +32,7 @@
 		"symfony/serializer": "^7.3",
 		"symfony/property-access": "^7.3",
 		"symfony/property-info": "^7.3",
-		"zolta/forge": "*"
+		"zolta/forge": "^1.0"
 	},
 	"require-dev": {
 		"mockery/mockery": "^1.6",
@@ -44,15 +44,6 @@
 		"phpmd/phpmd": "^2.15",
 		"rector/rector": "^2.2"
 	},
-	"repositories": [
-		{
-			"type": "path",
-			"url": "../forge",
-			"options": {
-				"symlink": true
-			}
-		}
-	],
 	"autoload": {
 		"psr-4": {
 			"Zolta\\Http\\Controller\\": "src/Controller/",
@@ -63,14 +54,12 @@
 			"Zolta\\Http\\Service\\Laravel\\": "src/Service/Adapters/Laravel/",
 			"Zolta\\Http\\Authorization\\": "src/Authorization/",
 			"Zolta\\Http\\Authorization\\Laravel\\": "src/Authorization/Adapters/Laravel/",
-			"Zolta\\Http\\Authorization\\Symfony\\": "src/Authorization/Adapters/Symfony/",
 			"Zolta\\Http\\Router\\": "src/Router/",
 			"Zolta\\Http\\Router\\Laravel\\": "src/Router/Adapters/Laravel/",
 			"Zolta\\Http\\Request\\": "src/Request/",
 			"Zolta\\Http\\Request\\Laravel\\": "src/Request/Adapters/Laravel/",
 			"Zolta\\Http\\Response\\": "src/Response/",
 			"Zolta\\Http\\Response\\Laravel\\": "src/Response/Adapters/Laravel/",
-			"Zolta\\Http\\Symfony\\": "src/Adapters/Symfony/",
             "Zolta\\Http\\Support\\": "src/Support/"
 		},
         "files": [

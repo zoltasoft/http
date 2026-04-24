@@ -67,6 +67,7 @@ class ZoltaHttpServiceProvider extends ServiceProvider
         foreach ($configured as $key => $value) {
             if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
                 $merged[$key] = $this->mergeConfigRecursively($merged[$key], $value);
+
                 continue;
             }
 

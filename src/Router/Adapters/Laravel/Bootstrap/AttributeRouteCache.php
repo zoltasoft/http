@@ -23,7 +23,7 @@ final class AttributeRouteCache
 
     private readonly string $manifestFile;
 
-    private readonly OpenApiDocumentationCache $documentationCache;
+    private readonly OpenApiDocumentationCache $openApiDocumentationCache;
 
     /** @var array<string,int> */
     private array $files = [];
@@ -42,7 +42,7 @@ final class AttributeRouteCache
         $this->servicesPath = $servicesPath ?? app_path('Services');
         $this->cacheFile = base_path('bootstrap/cache/attribute_routes.php');
         $this->manifestFile = base_path('bootstrap/cache/attribute_routes_manifest.php');
-        $this->documentationCache = new OpenApiDocumentationCache($this->servicesPath);
+        $this->openApiDocumentationCache = new OpenApiDocumentationCache($this->servicesPath);
     }
 
     /**
@@ -112,7 +112,7 @@ final class AttributeRouteCache
         $compiled = $this->compileRouteFile($allRoutes);
         $this->writeFile($this->cacheFile, $compiled);
         $this->writeManifest($roots);
-        $this->documentationCache->build();
+        $this->openApiDocumentationCache->build();
 
         if ($requireAfterBuild) {
             $this->requireCache();
@@ -190,7 +190,7 @@ final class AttributeRouteCache
         $compiled = $this->compileRouteFile($allRoutes);
         $this->writeFile($this->cacheFile, $compiled);
         $this->writeManifest($roots);
-        $this->documentationCache->buildSingleFile($filePath);
+        $this->openApiDocumentationCache->buildSingleFile($filePath);
 
         if ($requireAfterBuild) {
             $this->requireCache();
@@ -261,7 +261,7 @@ final class AttributeRouteCache
         $compiled = $this->compileRouteFile($allRoutes);
         $this->writeFile($this->cacheFile, $compiled);
         $this->writeManifest($roots);
-        $this->documentationCache->removeFile($filePath);
+        $this->openApiDocumentationCache->removeFile($filePath);
 
         if ($requireAfterBuild) {
             $this->requireCache();
@@ -294,7 +294,7 @@ final class AttributeRouteCache
             @unlink($this->manifestFile);
         }
 
-        $this->documentationCache->clear();
+        $this->openApiDocumentationCache->clear();
     }
 
     public function cacheFilePath(): string
@@ -309,12 +309,12 @@ final class AttributeRouteCache
 
     public function documentationFilePath(): string
     {
-        return $this->documentationCache->outputFilePath();
+        return $this->openApiDocumentationCache->outputFilePath();
     }
 
     public function documentationManifestFilePath(): string
     {
-        return $this->documentationCache->manifestFilePath();
+        return $this->openApiDocumentationCache->manifestFilePath();
     }
 
     /**
@@ -650,6 +650,7 @@ PHP;
             $absolutePath = $this->toAbsolutePath($relativePath);
             if (! is_file($absolutePath)) {
                 unset($this->files[$relativePath]);
+
                 continue;
             }
 

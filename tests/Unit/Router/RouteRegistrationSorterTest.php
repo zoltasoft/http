@@ -214,7 +214,7 @@ final class RouteRegistrationSorterTest extends TestCase
     private function routeEntry(string $uri, string ...$methods): array
     {
         $methods = $methods ?: ['GET'];
-        $methodsStr = 'array (' . implode(', ', array_map(fn(string $m): string => "'$m'", $methods)) . ')';
+        $methodsStr = 'array ('.implode(', ', array_map(fn (string $m): string => "'$m'", $methods)).')';
 
         return [
             'code' => "Route::match({$methodsStr}, '{$uri}', [\\Zolta\\Http\\Router\\Laravel\\Bootstrap\\AutoInvokeProxyController::class, '__invoke'])\n    ->middleware(array ('api'))\n    ->name('test');",

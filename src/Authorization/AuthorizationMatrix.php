@@ -59,16 +59,16 @@ final class AuthorizationMatrix
         foreach (($config['abilities'] ?? []) as $ability => $permissions) {
             $ability = (string) $ability;
             $abilities[$ability] = array_values(array_filter(
-                array_map(static fn($v): string => (string) $v, (array) $permissions),
-                static fn(string $v): bool => $v !== ''
+                array_map(static fn ($v): string => (string) $v, (array) $permissions),
+                static fn (string $v): bool => $v !== ''
             ));
         }
 
         self::$abilities = $abilities;
         $configuredAttributes = (array) ($config['user']['permissions'] ?? $config['user']['attributes'] ?? []);
         self::$userAttributes = array_values(array_filter(
-            array_map(static fn($v): string => (string) $v, $configuredAttributes),
-            static fn(string $v): bool => $v !== ''
+            array_map(static fn ($v): string => (string) $v, $configuredAttributes),
+            static fn (string $v): bool => $v !== ''
         )) ?: ['permissions', 'role.permissions', 'roles.*.permissions'];
         self::$userClass = isset($config['user']['class']) && (string) $config['user']['class'] !== ''
             ? (string) $config['user']['class']
@@ -85,8 +85,8 @@ final class AuthorizationMatrix
     public static function setUserAttributes(array $attributes): void
     {
         self::$userAttributes = array_values(array_filter(
-            array_map(static fn(string $v): string => (string) $v, $attributes),
-            static fn(string $v): bool => $v !== ''
+            array_map(static fn (string $v): string => (string) $v, $attributes),
+            static fn (string $v): bool => $v !== ''
         )) ?: self::$userAttributes;
     }
 
@@ -101,8 +101,8 @@ final class AuthorizationMatrix
         foreach ($abilities as $ability => $permissions) {
             $ability = (string) $ability;
             $mapped[$ability] = array_values(array_filter(
-                array_map(static fn($v): string => (string) $v, (array) $permissions),
-                static fn(string $v): bool => $v !== ''
+                array_map(static fn ($v): string => (string) $v, (array) $permissions),
+                static fn (string $v): bool => $v !== ''
             ));
         }
 
@@ -336,7 +336,7 @@ final class AuthorizationMatrix
      */
     private static function extractByPath(object|array $source, string $path): array
     {
-        $segments = array_values(array_filter(explode('.', $path), static fn(string $v): bool => $v !== ''));
+        $segments = array_values(array_filter(explode('.', $path), static fn (string $v): bool => $v !== ''));
 
         $current = [$source];
         foreach ($segments as $segment) {
@@ -360,7 +360,7 @@ final class AuthorizationMatrix
                 } elseif (is_object($item) && isset($item->{$segment})) {
                     $value = $item->{$segment};
                 } elseif (is_object($item)) {
-                    $accessor = 'get' . str_replace(' ', '', ucwords(str_replace(['_', '-'], ' ', $segment)));
+                    $accessor = 'get'.str_replace(' ', '', ucwords(str_replace(['_', '-'], ' ', $segment)));
                     if (method_exists($item, $accessor)) {
                         $value = $item->{$accessor}();
                     } elseif (method_exists($item, $segment)) {

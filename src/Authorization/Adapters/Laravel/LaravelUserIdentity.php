@@ -79,7 +79,7 @@ final readonly class LaravelUserIdentity implements UserIdentityInterface
                                 return $pname === '' ? null : ['id' => $pid, 'name' => $pname];
                             })
                             ->filter()
-                            ->unique(fn(array $p) => $p['id'] ?? $p['name'])
+                            ->unique(fn (array $p) => $p['id'] ?? $p['name'])
                             ->values()
                             ->all();
                     }
@@ -95,7 +95,7 @@ final readonly class LaravelUserIdentity implements UserIdentityInterface
             ->filter();
 
         return $normalized
-            ->unique(fn(array $r) => $r['id'] ?? $r['name'])
+            ->unique(fn (array $r) => $r['id'] ?? $r['name'])
             ->values()
             ->all();
     }
