@@ -16,6 +16,16 @@ use Zolta\Http\Router\Cache\ReflectionCache;
  */
 final class AttributeRouteLoader
 {
+    public static function resolveControllerClassFromFile(string $filePath): ?string
+    {
+        return self::fileToClass($filePath);
+    }
+
+    public static function shouldProcessControllerFile(string $filePath): bool
+    {
+        return self::shouldProcessFile($filePath);
+    }
+
     /**
      * @param  callable(string):void|null  $onFile
      * @param  callable(string):void|null  $onClass

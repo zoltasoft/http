@@ -8,7 +8,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Process;
 use Zolta\Http\Router\Laravel\Bootstrap\AttributeRouteCache;
 
 /**
@@ -260,16 +259,15 @@ class WatchRoutesCommand extends Command
     {
         try {
             $startTime = microtime(true);
-            $process = $this->runCacheProcess(['zolta:routes:cache', '--file='.$path]);
+            $result = $this->attributeRouteCache->buildSingleFile($path);
             $duration = number_format((microtime(true) - $startTime) * 1000, 1);
 
-            if ($process->isSuccessful()) {
-                $this->line("   ✅ Route cache updated ({$duration}ms)");
-                $this->relayProcessOutput($process);
-            } else {
-                $this->error("   Failed to update routes ({$duration}ms)");
-                $this->relayProcessOutput($process, true);
-            }
+            $this->line(sprintf(
+                '   ✅ Route cache updated (%sms, %d routes in file, %d total)',
+                $duration,
+                $result['routes'] ?? 0,
+                $result['total_routes'] ?? ($result['routes'] ?? 0),
+            ));
         } catch (\Throwable $e) {
             $this->error("   Failed to update routes: {$e->getMessage()}");
 
@@ -284,18 +282,16 @@ class WatchRoutesCommand extends Command
     private function removeRoutesForFile(string $path): void
     {
         try {
-            // For deleted files, we need to rebuild the full cache to remove their routes
             $startTime = microtime(true);
-            $process = $this->runCacheProcess(['zolta:routes:cache']);
+            $result = $this->attributeRouteCache->removeFile($path);
             $duration = number_format((microtime(true) - $startTime) * 1000, 1);
 
-            if ($process->isSuccessful()) {
-                $this->info("   ✅ Route cache rebuilt ({$duration}ms)");
-                $this->relayProcessOutput($process);
-            } else {
-                $this->error("   Failed to rebuild route cache ({$duration}ms)");
-                $this->relayProcessOutput($process, true);
-            }
+            $this->info(sprintf(
+                '   ✅ Route cache updated after delete (%sms, removed %d routes, %d total)',
+                $duration,
+                $result['routes'] ?? 0,
+                $result['total_routes'] ?? 0,
+            ));
         } catch (\Throwable $e) {
             $this->error("   Failed to rebuild route cache: {$e->getMessage()}");
 
@@ -304,40 +300,6 @@ class WatchRoutesCommand extends Command
                     'exception' => $e,
                 ]);
             }
-        }
-    }
-
-    /**
-     * @param  list<string>  $arguments
-     */
-    private function runCacheProcess(array $arguments): Process
-    {
-        $command = array_merge([PHP_BINARY, base_path('artisan')], $arguments, ['--no-ansi', '--no-interaction']);
-
-        $process = new Process($command, base_path());
-        $process->setTimeout(300);
-        $process->run();
-
-        return $process;
-    }
-
-    private function relayProcessOutput(Process $process, bool $forceError = false): void
-    {
-        $output = trim($process->getOutput());
-        $errorOutput = trim($process->getErrorOutput());
-
-        if ($forceError && $errorOutput !== '') {
-            $this->line('   '.$errorOutput);
-
-            return;
-        }
-
-        if ($this->getOutput()->isVerbose() && $output !== '') {
-            $this->line('   '.$output);
-        }
-
-        if ($forceError && $output === '' && $errorOutput === '') {
-            $this->line('   (no output from cache command)');
         }
     }
 
@@ -351,16 +313,8 @@ class WatchRoutesCommand extends Command
         }
 
         $this->line('Attribute route cache missing. Warming up...');
-
-        $process = $this->runCacheProcess(['zolta:routes:cache']);
-
-        if ($process->isSuccessful()) {
-            $this->line('Attribute route cache generated.');
-        } else {
-            $this->error('Failed to generate attribute route cache before watching.');
-            $this->relayProcessOutput($process, true);
-            exit(Command::FAILURE);
-        }
+        $this->attributeRouteCache->build();
+        $this->line('Attribute route cache generated.');
     }
 
     private function fileContainsClassLike(string $file): bool

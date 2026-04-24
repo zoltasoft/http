@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Zolta\Http\Authorization\Identity;
 
 return [
 

@@ -52,6 +52,13 @@ class CacheAttributeRoutesCommand extends Command
             ));
         }
 
+        if (config('zolta-http.routes.documentation.enabled')) {
+            $this->info(sprintf(
+                '🧾 OpenAPI documentation refreshed at %s.',
+                $attributeRouteCache->documentationFilePath(),
+            ));
+        }
+
         return Command::SUCCESS;
     }
 }

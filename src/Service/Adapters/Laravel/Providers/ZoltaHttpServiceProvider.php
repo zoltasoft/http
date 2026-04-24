@@ -14,7 +14,13 @@ class ZoltaHttpServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/zolta-http.php', 'zolta-http');
+        $httpConfigPath = __DIR__.'/../config/zolta-http.php';
+        $this->mergeConfigFrom($httpConfigPath, 'zolta-http');
+        $this->app['config']->set(
+            'zolta-http',
+            $this->mergeConfigRecursively(require $httpConfigPath, (array) config('zolta-http', [])),
+        );
+
         $this->mergeConfigFrom(
             dirname(__DIR__, 4).'/Authorization/Adapters/Laravel/config/zolta-security.php',
             'zolta-security',
@@ -47,5 +53,26 @@ class ZoltaHttpServiceProvider extends ServiceProvider
         $this->publishes([
             dirname(__DIR__, 4).'/Authorization/Adapters/Laravel/config/zolta-security.php' => config_path('zolta-security.php'),
         ], 'zolta-security-config');
+    }
+
+    /**
+     * @param  array<string,mixed>  $defaults
+     * @param  array<string,mixed>  $configured
+     * @return array<string,mixed>
+     */
+    private function mergeConfigRecursively(array $defaults, array $configured): array
+    {
+        $merged = $defaults;
+
+        foreach ($configured as $key => $value) {
+            if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
+                $merged[$key] = $this->mergeConfigRecursively($merged[$key], $value);
+                continue;
+            }
+
+            $merged[$key] = $value;
+        }
+
+        return $merged;
     }
 }

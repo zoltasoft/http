@@ -19,6 +19,10 @@ class ZoltaRouterAttributeServiceProvider extends ServiceProvider
             return;
         }
 
+        if (! config('zolta-http.routes.cache.ensure_fresh_on_boot', false)) {
+            return;
+        }
+
         $this->app->booted(static function (): void {
             (new AttributeRouteCache)->ensureLoaded();
         });

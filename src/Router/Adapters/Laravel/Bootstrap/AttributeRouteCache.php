@@ -23,6 +23,8 @@ final class AttributeRouteCache
 
     private readonly string $manifestFile;
 
+    private readonly OpenApiDocumentationCache $documentationCache;
+
     /** @var array<string,int> */
     private array $files = [];
 
@@ -40,6 +42,7 @@ final class AttributeRouteCache
         $this->servicesPath = $servicesPath ?? app_path('Services');
         $this->cacheFile = base_path('bootstrap/cache/attribute_routes.php');
         $this->manifestFile = base_path('bootstrap/cache/attribute_routes_manifest.php');
+        $this->documentationCache = new OpenApiDocumentationCache($this->servicesPath);
     }
 
     /**
@@ -109,6 +112,7 @@ final class AttributeRouteCache
         $compiled = $this->compileRouteFile($allRoutes);
         $this->writeFile($this->cacheFile, $compiled);
         $this->writeManifest($roots);
+        $this->documentationCache->build();
 
         if ($requireAfterBuild) {
             $this->requireCache();
@@ -186,6 +190,7 @@ final class AttributeRouteCache
         $compiled = $this->compileRouteFile($allRoutes);
         $this->writeFile($this->cacheFile, $compiled);
         $this->writeManifest($roots);
+        $this->documentationCache->buildSingleFile($filePath);
 
         if ($requireAfterBuild) {
             $this->requireCache();
@@ -207,6 +212,77 @@ final class AttributeRouteCache
     }
 
     /**
+     * Remove one deleted controller file from the route cache and manifest
+     * without rebuilding every discovered controller.
+     *
+     * @return array{routes:int,files:int,total_routes:int}
+     */
+    public function removeFile(string $filePath, bool $requireAfterBuild = true): array
+    {
+        $manifest = $this->readManifest();
+        if ($manifest === null || ! isset($manifest['routes_by_file'])) {
+            if ($this->verboseLogging()) {
+                Log::info('🔄 File removal detected but manifest missing/outdated – triggering full rebuild');
+            }
+
+            $result = $this->build($requireAfterBuild);
+
+            return [
+                'routes' => $result['routes'],
+                'files' => $result['files'],
+                'total_routes' => $result['routes'],
+            ];
+        }
+
+        $this->files = (array) ($manifest['files'] ?? []);
+        $this->directories = (array) ($manifest['directories'] ?? []);
+        $this->routesByFile = (array) ($manifest['routes_by_file'] ?? []);
+        $roots = (array) ($manifest['roots'] ?? []);
+
+        if ($roots === []) {
+            $result = $this->build($requireAfterBuild);
+
+            return [
+                'routes' => $result['routes'],
+                'files' => $result['files'],
+                'total_routes' => $result['routes'],
+            ];
+        }
+
+        $startedAt = microtime(true);
+        $relativePath = $this->toRelativePath($filePath);
+        $removedRoutes = count($this->routesByFile[$relativePath] ?? []);
+
+        unset($this->files[$relativePath], $this->routesByFile[$relativePath]);
+
+        $this->rebuildDirectories($roots);
+
+        $allRoutes = $this->flattenRoutesByFile();
+        $compiled = $this->compileRouteFile($allRoutes);
+        $this->writeFile($this->cacheFile, $compiled);
+        $this->writeManifest($roots);
+        $this->documentationCache->removeFile($filePath);
+
+        if ($requireAfterBuild) {
+            $this->requireCache();
+            if (app()->environment(['local', 'development', 'testing'])) {
+                $this->clearLaravelRouteCache();
+            }
+
+            if ($this->verboseLogging()) {
+                $duration = number_format((microtime(true) - $startedAt) * 1000, 1);
+                Log::info("✅ Removed {$removedRoutes} cached routes from {$relativePath} ({$duration} ms)");
+            }
+        }
+
+        return [
+            'routes' => $removedRoutes,
+            'files' => count($this->routesByFile),
+            'total_routes' => count($allRoutes),
+        ];
+    }
+
+    /**
      * Remove cached route + manifest files.
      */
     public function clear(): void
@@ -217,6 +293,8 @@ final class AttributeRouteCache
         if (is_file($this->manifestFile)) {
             @unlink($this->manifestFile);
         }
+
+        $this->documentationCache->clear();
     }
 
     public function cacheFilePath(): string
@@ -227,6 +305,16 @@ final class AttributeRouteCache
     public function manifestFilePath(): string
     {
         return $this->manifestFile;
+    }
+
+    public function documentationFilePath(): string
+    {
+        return $this->documentationCache->outputFilePath();
+    }
+
+    public function documentationManifestFilePath(): string
+    {
+        return $this->documentationCache->manifestFilePath();
     }
 
     /**
@@ -542,6 +630,30 @@ PHP;
             }
 
             $absolutePath = dirname($absolutePath);
+        }
+    }
+
+    /**
+     * @param  list<string>  $roots
+     */
+    private function rebuildDirectories(array $roots): void
+    {
+        $this->directories = [];
+
+        foreach ($roots as $root) {
+            if (is_dir($root)) {
+                $this->recordDirectory($root);
+            }
+        }
+
+        foreach (array_keys($this->files) as $relativePath) {
+            $absolutePath = $this->toAbsolutePath($relativePath);
+            if (! is_file($absolutePath)) {
+                unset($this->files[$relativePath]);
+                continue;
+            }
+
+            $this->recordDirectory(dirname($absolutePath));
         }
     }
 

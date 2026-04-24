@@ -18,11 +18,15 @@ class ClearAttributeRoutesCommand extends Command
         $attributeRouteCache = new AttributeRouteCache;
         $cachePath = $attributeRouteCache->cacheFilePath();
         $manifestPath = $attributeRouteCache->manifestFilePath();
+        $documentationPath = $attributeRouteCache->documentationFilePath();
+        $documentationManifestPath = $attributeRouteCache->documentationManifestFilePath();
 
         $cacheExists = file_exists($cachePath);
         $manifestExists = file_exists($manifestPath);
+        $documentationExists = file_exists($documentationPath);
+        $documentationManifestExists = file_exists($documentationManifestPath);
 
-        if (! $cacheExists && ! $manifestExists) {
+        if (! $cacheExists && ! $manifestExists && ! $documentationExists && ! $documentationManifestExists) {
             $this->info('ℹ️ No cached attribute routes found – nothing to clear.');
 
             return Command::SUCCESS;
@@ -36,6 +40,14 @@ class ClearAttributeRoutesCommand extends Command
 
         if ($manifestExists) {
             $this->info("🗑️ Cleared route manifest: {$manifestPath}");
+        }
+
+        if ($documentationExists) {
+            $this->info("🗑️ Cleared OpenAPI documentation: {$documentationPath}");
+        }
+
+        if ($documentationManifestExists) {
+            $this->info("🗑️ Cleared OpenAPI manifest: {$documentationManifestPath}");
         }
 
         $this->info('✅ Attribute route cache cleared successfully.');
