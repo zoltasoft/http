@@ -13,7 +13,7 @@ Define your entire HTTP pipeline — routing, validation, service binding, autho
 public function show() {}  // That's it. The entire endpoint.
 ```
 
-First-class Laravel and Symfony adapters. OpenAPI generation from the same attributes. Under 2ms pipeline overhead.
+First-class Laravel (Symfony support coming soon) adapters. OpenAPI generation from the same attributes. Under 2ms pipeline overhead.
 
 ---
 
@@ -247,20 +247,20 @@ The rest of your request time is your application logic — Eloquent queries, ex
 
 ## Dual framework support
 
-Every module has independent Laravel and Symfony adapters:
+Every module has independent Laravel adapter (Symfony support is coming soon). The same controller code runs on either framework without modification.:
 
 | Feature | Laravel | Symfony |
 |---------|---------|---------|
-| Attribute routing | ✅ | ✅ |
-| Form request validation | ✅ | ✅ |
-| DTO mapping | ✅ | ✅ |
-| Authorization | ✅ | ✅ |
-| Exception handling | ✅ | ✅ |
-| Response shaping | ✅ | ✅ |
-| View rendering | ✅ | ✅ |
-| OpenAPI generation | ✅ | ✅ |
-| Route caching | ✅ | ✅ |
-| Reflection caching | ✅ | ✅ |
+| Attribute routing | ✅ | coming soon |
+| Form request validation | ✅ | coming soon |
+| DTO mapping | ✅ | coming soon |
+| Authorization | ✅ | coming soon |
+| Exception handling | ✅ | coming soon |
+| Response shaping | ✅ | coming soon |
+| View rendering | ✅ | coming soon |
+| OpenAPI generation | ✅ | coming soon |
+| Route caching | ✅ | coming soon |
+| Reflection caching | ✅ | coming soon |
 
 Write your controllers once, deploy on either framework.
 
