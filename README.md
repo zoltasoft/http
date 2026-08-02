@@ -115,6 +115,21 @@ final class GetUserByIdRequest extends BaseRequest
 }
 ```
 
+Authenticated actors, tenant identifiers, and other server-owned values belong in
+`trustedData()`. They are merged after validation and always replace client input with
+the same key:
+
+```php
+public function trustedData(): array
+{
+    return ['user_id' => (string) $this->user()->getAuthIdentifier()];
+}
+```
+
+Never accept an actor or tenant identifier from query parameters or the request body.
+The former `withData()` hook remains available as a deprecated migration bridge and is
+treated with the same trusted precedence.
+
 ### 3. Define an input DTO
 
 ```php

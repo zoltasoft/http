@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Zolta\Http\Router\Laravel\Bootstrap\Response;
 
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 use Zolta\Exceptions\Contracts\RenderableExceptionInterface;
 use Zolta\Http\Response\HttpResponse;
@@ -16,6 +18,36 @@ final class ExceptionResponseFactory
 {
     public function fromException(Throwable $throwable): mixed
     {
+        if ($throwable instanceof HttpExceptionInterface) {
+            $status = $throwable->getStatusCode();
+            $message = $throwable->getMessage() !== ''
+                ? $throwable->getMessage()
+                : (SymfonyResponse::$statusTexts[$status] ?? 'HTTP error');
+            $response = HttpResponse::fromPayload(
+                new ResponsePayload(
+                    success: false,
+                    message: $message,
+                    data: [],
+                    errors: [
+                        'public' => [
+                            'code' => "http.{$status}",
+                            'message' => $message,
+                        ],
+                    ],
+                    debug: config('app.debug')
+                        ? ['exception_class' => $throwable::class]
+                        : [],
+                ),
+                $status,
+            );
+
+            if ($response instanceof SymfonyResponse) {
+                $response->headers->add($throwable->getHeaders());
+            }
+
+            return $response;
+        }
+
         if ($throwable instanceof RenderableExceptionInterface) {
             $context = $throwable->context();
             $message = $throwable->getMessage();

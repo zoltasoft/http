@@ -38,14 +38,17 @@ final class RequestMapper
             }
         }
 
-        // Merge additional contextual data declared by the request (e.g. authenticated
-        // user ID, tenant). Validated values take precedence — withData() only fills
-        // keys that are not already present.
-        if (method_exists($formRequest, 'withData')) {
-            $extra = $formRequest->withData();
-            if (is_array($extra) && $extra !== []) {
-                $data = array_merge($extra, $data);
-            }
+        // Trusted server-derived values (authenticated actor, tenant, resolved route
+        // identifiers) are merged last so client input can never replace them.
+        $trusted = [];
+        if (method_exists($formRequest, 'trustedData')) {
+            $trusted = $formRequest->trustedData();
+        } elseif (method_exists($formRequest, 'withData')) {
+            $trusted = $formRequest->withData();
+        }
+
+        if (is_array($trusted) && $trusted !== []) {
+            $data = array_merge($data, $trusted);
         }
 
         if ($callback) {

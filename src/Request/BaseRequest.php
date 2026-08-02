@@ -118,11 +118,22 @@ class BaseRequest extends FrameworkBoundBaseRequest implements CoreRequestContra
     }
 
     /**
-     * Additional data to merge into the validated payload before DTO mapping.
+     * Trusted server-derived data to merge into the validated payload before DTO mapping.
      *
-     * Override in concrete requests to inject contextual values (e.g. authenticated
-     * user ID, tenant, resolved route parameters) that are not part of the HTTP
-     * body but should appear in the DTO.
+     * Override in concrete requests to inject values such as the authenticated actor,
+     * tenant, or resolved route parameters. Trusted values take precedence over all
+     * client-controlled input with the same key.
+     *
+     * @return array<string,mixed>
+     */
+    public function trustedData(): array
+    {
+        return $this->withData();
+    }
+
+    /**
+     * @deprecated Override trustedData() instead. Values returned here are treated as
+     * trusted server-derived data and take precedence over client input.
      *
      * @return array<string,mixed>
      */

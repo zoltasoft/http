@@ -16,7 +16,7 @@ final class HttpQueryOptions
      *
      * Supported $config keys:
      * - default_include: array|string|null of relations to include when request omits the parameter.
-     * - context: array of additional context flags to merge with request-provided context.
+     * - context: server-controlled contextual flags.
      * - strict: bool indicating whether to enable strict whitelist handling.
      * - allowed_filters: string[] whitelist applied when strict = true.
      * - allowed_sorts: string[] whitelist applied when strict = true.
@@ -42,11 +42,9 @@ final class HttpQueryOptions
         $page = $request->query('page');
         $page = is_numeric($page) ? (int) $page : null;
 
-        $context = $request->query('context', []);
-        $context = is_array($context) ? $context : (array) $context;
-        if (! empty($config['context']) && is_array($config['context'])) {
-            $context = array_merge($context, $config['context']);
-        }
+        $context = isset($config['context']) && is_array($config['context'])
+            ? $config['context']
+            : [];
 
         $payload = [
             'filters' => $filters,

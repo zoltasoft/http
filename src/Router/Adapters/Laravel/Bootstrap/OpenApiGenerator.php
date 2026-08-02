@@ -498,7 +498,7 @@ final class OpenApiGenerator
     }
 
     /**
-     * @return array<string,mixed>
+     * @return array<int, array<string, mixed>>
      */
     private static function buildResponses(
         int $status,
