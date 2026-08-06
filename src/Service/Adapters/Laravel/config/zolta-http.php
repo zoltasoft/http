@@ -35,7 +35,7 @@ return [
             'output_dir' => env('ZOLTA_ROUTE_DOCS_OUTPUT_DIR', base_path('bootstrap/cache')),
             'output_file' => env('ZOLTA_ROUTE_DOCS_OUTPUT_FILE', 'openapi.json'),
             'manifest_file' => env('ZOLTA_ROUTE_DOCS_MANIFEST_FILE', 'openapi_manifest.php'),
-            'title' => env('ZOLTA_ROUTE_DOCS_TITLE', env('APP_NAME', 'Laravel').' API'),
+            'title' => env('ZOLTA_ROUTE_DOCS_TITLE', env('APP_NAME', 'Laravel') . ' API'),
             'version' => env('ZOLTA_ROUTE_DOCS_VERSION', env('APP_VERSION', '1.0.0')),
             'description' => env(
                 'ZOLTA_ROUTE_DOCS_DESCRIPTION',
@@ -47,19 +47,4 @@ return [
 
         'default_response' => null,
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | SQLite WSL Helpers
-    |--------------------------------------------------------------------------
-    */
-
-    'sqlite' => [
-        'wsl_path' => base_path('database/database.sqlite'),
-        'windows_path' => env('ZOLTA_SQLITE_WINDOWS_PATH', 'C:\\Users\\Public\\zolta-sqlite\\database.sqlite'),
-        'wsl_windows_path' => env('ZOLTA_SQLITE_WSL_WINDOWS_PATH', '/mnt/c/Users/Public/zolta-sqlite/database.sqlite'),
-        'browser_executable' => env('ZOLTA_SQLITE_BROWSER', 'C:\\Program Files\\DB Browser for SQLite\\DB Browser for SQLite.exe'),
-        'backup_dir' => env('ZOLTA_SQLITE_BACKUP_DIR', base_path('database/backups')),
-    ],
-
 ];

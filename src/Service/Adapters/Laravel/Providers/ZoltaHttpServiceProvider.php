@@ -14,7 +14,7 @@ class ZoltaHttpServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $httpConfigPath = __DIR__.'/../config/zolta-http.php';
+        $httpConfigPath = __DIR__ . '/../config/zolta-http.php';
         $this->mergeConfigFrom($httpConfigPath, 'zolta-http');
         $this->app['config']->set(
             'zolta-http',
@@ -22,7 +22,7 @@ class ZoltaHttpServiceProvider extends ServiceProvider
         );
 
         $this->mergeConfigFrom(
-            dirname(__DIR__, 4).'/Authorization/Adapters/Laravel/config/zolta-security.php',
+            dirname(__DIR__, 4) . '/Authorization/Adapters/Laravel/config/zolta-security.php',
             'zolta-security',
         );
 
@@ -47,11 +47,11 @@ class ZoltaHttpServiceProvider extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__.'/../config/zolta-http.php' => config_path('zolta-http.php'),
+            __DIR__ . '/../config/zolta-http.php' => config_path('zolta-http.php'),
         ], 'zolta-http-config');
 
         $this->publishes([
-            dirname(__DIR__, 4).'/Authorization/Adapters/Laravel/config/zolta-security.php' => config_path('zolta-security.php'),
+            dirname(__DIR__, 4) . '/Authorization/Adapters/Laravel/config/zolta-security.php' => config_path('zolta-security.php'),
         ], 'zolta-security-config');
     }
 
