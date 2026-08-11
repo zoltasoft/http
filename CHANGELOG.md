@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.0] - 2026-08-11
+
+### Added
+- Added Laravel Identity token introspection through the `identity.introspect` middleware alias
+- Added live and sandbox Identity connections, project validation, bounded introspection caching, and Identity webhook signature verification
+- Added the `IdentityPrincipal` Laravel authenticated user projection and the `IntrospectedIdentity` request attribute
+- Added the `ZoltaIdentityServiceProvider` and publishable `identity-consumer` configuration
+
+### Changed
+- Unified HTTP, security, identity, and Identity-consumer settings under the canonical `zolta.*` configuration namespace while retaining legacy configuration aliases
+- Restored the released `zolta/forge ^1.0` dependency constraint for package consumers
+
+---
+
 ## [2.0.0] - 2026-08-02
 
 ### Added
@@ -32,5 +46,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version comparison links
 
-[Unreleased]: https://github.com/zoltasoft/http/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/zoltasoft/http/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/zoltasoft/http/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/zoltasoft/http/compare/v1.0.0...v2.0.0

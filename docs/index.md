@@ -53,6 +53,7 @@ The method body is empty. The framework reads the attributes at boot time and wi
 | [Service](/modules/service) | `Zolta\Http\Service` | Service binding, documentation, file uploads |
 | [Exceptions](/modules/exceptions) | `Zolta\Http\Exceptions` | Exception handling and normalization |
 | [Authorization](/modules/authorization) | `Zolta\Http\Authorization` | Abilities, permissions, user resolution |
+| [Identity](/modules/identity) | `Zolta\Http\Identity\Laravel` | Remote Identity token introspection for Laravel |
 
 ## Requirements
 

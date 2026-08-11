@@ -176,7 +176,7 @@ final readonly class LaravelUserIdentity implements UserIdentityInterface
             }
 
             $identityClass = function_exists('config')
-                ? (config('zolta_identity.class') ?? config('zolta.identity.class') ?? null)
+                ? (config('zolta.identity.class') ?? config('zolta_identity.class') ?? null)
                 : null;
             $permissionPaths = [];
             if (is_string($identityClass) && is_subclass_of($identityClass, Identity::class)) {

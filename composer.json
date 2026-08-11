@@ -60,11 +60,12 @@
 			"Zolta\\Http\\Request\\Laravel\\": "src/Request/Adapters/Laravel/",
 			"Zolta\\Http\\Response\\": "src/Response/",
 			"Zolta\\Http\\Response\\Laravel\\": "src/Response/Adapters/Laravel/",
-            "Zolta\\Http\\Support\\": "src/Support/"
+			"Zolta\\Http\\Identity\\Laravel\\": "src/Identity/Adapters/Laravel/",
+			"Zolta\\Http\\Support\\": "src/Support/"
 		},
-        "files": [
-            "src/Support/helpers.php"
-        ]
+		"files": [
+			"src/Support/helpers.php"
+		]
 	},
 	"autoload-dev": {
 		"psr-4": {
@@ -79,14 +80,16 @@
 				"Zolta\\Http\\Service\\Laravel\\Providers\\ZoltaHttpServiceProvider",
 				"Zolta\\Http\\Router\\Laravel\\Providers\\ZoltaRouterServiceProvider",
 				"Zolta\\Http\\Request\\Laravel\\Providers\\ZoltaRequestServiceProvider",
-				"Zolta\\Http\\Authorization\\Laravel\\Providers\\ZoltaAuthorizationServiceProvider"
+				"Zolta\\Http\\Authorization\\Laravel\\Providers\\ZoltaAuthorizationServiceProvider",
+				"Zolta\\Http\\Identity\\Laravel\\Providers\\ZoltaIdentityServiceProvider"
 			]
 		},
 		"zolta-framework-adapter": [
 			"Zolta\\Http\\Service\\Laravel\\LaravelHttpAdapter",
 			"Zolta\\Http\\Router\\Laravel\\LaravelRouterAdapter",
 			"Zolta\\Http\\Request\\Laravel\\LaravelRequestAdapter",
-			"Zolta\\Http\\Response\\Laravel\\LaravelResponseAdapter"
+			"Zolta\\Http\\Response\\Laravel\\LaravelResponseAdapter",
+			"Zolta\\Http\\Identity\\Laravel\\LaravelIdentityAdapter"
 		]
 	},
 	"scripts": {

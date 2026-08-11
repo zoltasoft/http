@@ -32,7 +32,7 @@ final class ZoltaAuthorizationServiceProvider extends ServiceProvider
         try {
             // Load the zolta_security config into the matrix so abilities and
             // user attribute paths are resolved before the first check.
-            $config = config('zolta-security', []);
+            $config = config('zolta.security', config('zolta-security', []));
             if (is_array($config) && $config !== []) {
                 AuthorizationMatrix::configure($config);
             }
