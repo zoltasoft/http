@@ -181,7 +181,7 @@ The `ZoltaHttpServiceProvider` registers:
 
 ```php
 // Published config
-php artisan vendor:publish --tag=zolta-http-config
+php artisan vendor:publish --tag=zolta-config
 ```
 
 ### Symfony
