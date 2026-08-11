@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Zolta\Http\Authorization\Identity;
+
 return [
 
     /*
@@ -10,11 +12,11 @@ return [
     |--------------------------------------------------------------------------
     |
     | Fully-qualified Identity class used by the package when resolving the
-    | current user identity. If left null the default
-    | Zolta\Http\Authorization\Identity will be used.
+    | current user identity. The class must extend
+    | Zolta\Http\Authorization\Identity.
     |
     */
-    'class' => env('ZOLTA_IDENTITY_CLASS', null),
+    'class' => env('ZOLTA_IDENTITY_CLASS', Identity::class),
 
     /*
     |--------------------------------------------------------------------------

@@ -105,7 +105,7 @@ class Identity implements UserIdentityInterface
 
         // Prefer explicit identity class, fallback to app config if provided.
         if (! $identityClass && function_exists('config')) {
-            $identityClass = config('zolta_identity.class') ?? config('zolta.identity.class');
+            $identityClass = config('zolta.identity.class') ?? config('zolta_identity.class');
         }
 
         $targetClass = $identityClass ? (string) $identityClass : self::class;

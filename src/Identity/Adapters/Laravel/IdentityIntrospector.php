@@ -22,7 +22,7 @@ final class IdentityIntrospector
 
         $configured = 0;
         $unavailable = 0;
-        foreach ((array) config('identity-consumer.connections', []) as $name => $connection) {
+        foreach ((array) config('zolta.identity_consumer.connections', config('identity-consumer.connections', [])) as $name => $connection) {
             if (! $this->configured($connection)) {
                 continue;
             }
@@ -30,7 +30,7 @@ final class IdentityIntrospector
 
             try {
                 $response = Http::acceptJson()
-                    ->timeout((int) config('identity-consumer.timeout_seconds', 5))
+                    ->timeout((int) config('zolta.identity_consumer.timeout_seconds', config('identity-consumer.timeout_seconds', 5)))
                     ->post(rtrim((string) $connection['base_url'], '/') . '/api/v1/identity/auth/introspect', [
                         'client_id' => $connection['client_id'],
                         'client_secret' => $connection['client_secret'],
@@ -61,7 +61,7 @@ final class IdentityIntrospector
             }
 
             $ttl = min(
-                (int) config('identity-consumer.cache_seconds', 30),
+                (int) config('zolta.identity_consumer.cache_seconds', config('identity-consumer.cache_seconds', 30)),
                 max(1, (int) ($payload['exp'] ?? now()->addSecond()->getTimestamp()) - now()->getTimestamp()),
             );
             Cache::put($cacheKey, ['payload' => $payload, 'connection' => (string) $name], $ttl);

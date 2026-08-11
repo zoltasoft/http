@@ -15,16 +15,53 @@ class ZoltaHttpServiceProvider extends ServiceProvider
     public function register(): void
     {
         $httpConfigPath = __DIR__ . '/../config/zolta-http.php';
+        $securityConfigPath = dirname(__DIR__, 4) . '/Authorization/Adapters/Laravel/config/zolta-security.php';
+        $identityConfigPath = __DIR__ . '/../config/zolta_identity.php';
+
         $this->mergeConfigFrom($httpConfigPath, 'zolta-http');
-        $this->app['config']->set(
-            'zolta-http',
-            $this->mergeConfigRecursively(require $httpConfigPath, (array) config('zolta-http', [])),
+        $this->mergeConfigFrom($securityConfigPath, 'zolta-security');
+        $this->mergeConfigFrom($identityConfigPath, 'zolta_identity');
+
+        $configured = (array) config('zolta', []);
+        $canonicalHttp = (array) ($configured['http'] ?? []);
+        $canonicalSecurity = (array) ($configured['security'] ?? []);
+        $canonicalIdentity = (array) ($configured['identity'] ?? []);
+
+        // Merge order: package defaults -> legacy aliases -> canonical zolta.*.
+        // This keeps backward compatibility while ensuring canonical keys win.
+        $configured['http'] = $this->mergeConfigRecursively(
+            (array) require $httpConfigPath,
+            (array) config('zolta-http', []),
+        );
+        $configured['http'] = $this->mergeConfigRecursively(
+            $configured['http'],
+            $canonicalHttp,
         );
 
-        $this->mergeConfigFrom(
-            dirname(__DIR__, 4) . '/Authorization/Adapters/Laravel/config/zolta-security.php',
-            'zolta-security',
+        $configured['security'] = $this->mergeConfigRecursively(
+            (array) require $securityConfigPath,
+            (array) config('zolta-security', []),
         );
+        $configured['security'] = $this->mergeConfigRecursively(
+            $configured['security'],
+            $canonicalSecurity,
+        );
+
+        $configured['identity'] = $this->mergeConfigRecursively(
+            (array) require $identityConfigPath,
+            (array) config('zolta_identity', []),
+        );
+        $configured['identity'] = $this->mergeConfigRecursively(
+            $configured['identity'],
+            $canonicalIdentity,
+        );
+
+        $this->app['config']->set('zolta', $configured);
+
+        // Legacy aliases for backward compatibility while zolta.* is canonical.
+        $this->app['config']->set('zolta-http', (array) ($configured['http'] ?? []));
+        $this->app['config']->set('zolta-security', (array) ($configured['security'] ?? []));
+        $this->app['config']->set('zolta_identity', (array) ($configured['identity'] ?? []));
 
         // Core bindings
         $this->app->register(LaravelBridgeServiceProvider::class);
@@ -41,7 +78,7 @@ class ZoltaHttpServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $securityConfig = config('zolta-security', []);
+        $securityConfig = config('zolta.security', config('zolta-security', []));
         if (is_array($securityConfig) && $securityConfig !== []) {
             AuthorizationMatrix::configure($securityConfig);
         }

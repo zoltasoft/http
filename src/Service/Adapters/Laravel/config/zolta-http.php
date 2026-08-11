@@ -30,6 +30,8 @@ return [
             app_path('Http/Controllers'),
         ],
 
+        'exclude_paths' => [],
+
         'documentation' => [
             'enabled' => env('ZOLTA_ROUTE_DOCS_ENABLED', false),
             'output_dir' => env('ZOLTA_ROUTE_DOCS_OUTPUT_DIR', base_path('bootstrap/cache')),
@@ -46,5 +48,13 @@ return [
         ],
 
         'default_response' => null,
+    ],
+
+    'sqlite' => [
+        'wsl_path' => database_path('database.sqlite'),
+        'wsl_windows_path' => env('ZOLTA_SQLITE_WSL_WINDOWS_PATH', '/mnt/c/Users/Public/zolta-sqlite/database.sqlite'),
+        'windows_path' => env('ZOLTA_SQLITE_WINDOWS_PATH', 'C:\\Users\\Public\\zolta-sqlite\\database.sqlite'),
+        'backup_dir' => env('ZOLTA_SQLITE_BACKUP_DIR', base_path('database/backups')),
+        'browser_executable' => env('ZOLTA_SQLITE_BROWSER_EXECUTABLE'),
     ],
 ];
