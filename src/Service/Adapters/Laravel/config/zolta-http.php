@@ -37,7 +37,7 @@ return [
             'output_dir' => env('ZOLTA_ROUTE_DOCS_OUTPUT_DIR', base_path('bootstrap/cache')),
             'output_file' => env('ZOLTA_ROUTE_DOCS_OUTPUT_FILE', 'openapi.json'),
             'manifest_file' => env('ZOLTA_ROUTE_DOCS_MANIFEST_FILE', 'openapi_manifest.php'),
-            'title' => env('ZOLTA_ROUTE_DOCS_TITLE', env('APP_NAME', 'Laravel') . ' API'),
+            'title' => env('ZOLTA_ROUTE_DOCS_TITLE', env('APP_NAME', 'Laravel').' API'),
             'version' => env('ZOLTA_ROUTE_DOCS_VERSION', env('APP_VERSION', '1.0.0')),
             'description' => env(
                 'ZOLTA_ROUTE_DOCS_DESCRIPTION',

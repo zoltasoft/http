@@ -14,9 +14,9 @@ class ZoltaHttpServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $httpConfigPath = __DIR__ . '/../config/zolta-http.php';
-        $securityConfigPath = dirname(__DIR__, 4) . '/Authorization/Adapters/Laravel/config/zolta-security.php';
-        $identityConfigPath = __DIR__ . '/../config/zolta_identity.php';
+        $httpConfigPath = __DIR__.'/../config/zolta-http.php';
+        $securityConfigPath = dirname(__DIR__, 4).'/Authorization/Adapters/Laravel/config/zolta-security.php';
+        $identityConfigPath = __DIR__.'/../config/zolta_identity.php';
 
         $this->mergeConfigFrom($httpConfigPath, 'zolta-http');
         $this->mergeConfigFrom($securityConfigPath, 'zolta-security');
@@ -59,9 +59,9 @@ class ZoltaHttpServiceProvider extends ServiceProvider
         $this->app['config']->set('zolta', $configured);
 
         // Legacy aliases for backward compatibility while zolta.* is canonical.
-        $this->app['config']->set('zolta-http', (array) ($configured['http'] ?? []));
-        $this->app['config']->set('zolta-security', (array) ($configured['security'] ?? []));
-        $this->app['config']->set('zolta_identity', (array) ($configured['identity'] ?? []));
+        $this->app['config']->set('zolta-http', $configured['http']);
+        $this->app['config']->set('zolta-security', $configured['security']);
+        $this->app['config']->set('zolta_identity', $configured['identity']);
 
         // Core bindings
         $this->app->register(LaravelBridgeServiceProvider::class);
@@ -84,11 +84,11 @@ class ZoltaHttpServiceProvider extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__ . '/../config/zolta-http.php' => config_path('zolta-http.php'),
+            __DIR__.'/../config/zolta-http.php' => config_path('zolta-http.php'),
         ], 'zolta-http-config');
 
         $this->publishes([
-            dirname(__DIR__, 4) . '/Authorization/Adapters/Laravel/config/zolta-security.php' => config_path('zolta-security.php'),
+            dirname(__DIR__, 4).'/Authorization/Adapters/Laravel/config/zolta-security.php' => config_path('zolta-security.php'),
         ], 'zolta-security-config');
     }
 

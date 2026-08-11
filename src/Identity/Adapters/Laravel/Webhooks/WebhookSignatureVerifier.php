@@ -21,7 +21,7 @@ final readonly class WebhookSignatureVerifier
 
         $provided = substr($signature, 3);
         foreach ($secrets as $secret) {
-            if ($secret !== '' && hash_equals(hash_hmac('sha256', $timestamp . '.' . $payload, $secret), $provided)) {
+            if ($secret !== '' && hash_equals(hash_hmac('sha256', $timestamp.'.'.$payload, $secret), $provided)) {
                 return true;
             }
         }

@@ -48,6 +48,20 @@ composer require zolta/http
 
 Laravel auto-discovers the service provider. For Symfony, register the bundle in `config/bundles.php`.
 
+### Identity token introspection (Laravel)
+
+`v2.1.0` adds optional remote Identity token validation. Publish the configuration, set `IDENTITY_API_URL`, `IDENTITY_CLIENT_ID`, and `IDENTITY_CLIENT_SECRET`, then protect a route with `identity.introspect`:
+
+```bash
+php artisan vendor:publish --tag=identity-consumer-config
+```
+
+```php
+Route::get('/profile', ProfileController::class)->middleware('identity.introspect');
+```
+
+See the [Identity module documentation](docs/modules/identity/index.md) for sandbox connections, permission checks, caching, and webhook signature verification.
+
 ---
 
 ## The pipeline — from request to response

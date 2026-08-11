@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Zolta\Http\Identity\Laravel;
 
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Throwable;
@@ -14,7 +13,7 @@ final class IdentityIntrospector
 {
     public function introspect(string $token): ?IntrospectedIdentity
     {
-        $cacheKey = 'zolta-identity:introspection:' . hash('sha256', $token);
+        $cacheKey = 'zolta-identity:introspection:'.hash('sha256', $token);
         $cached = Cache::get($cacheKey);
         if (is_array($cached)) {
             return IntrospectedIdentity::fromPayload($cached['payload'], $cached['connection']);
@@ -31,15 +30,11 @@ final class IdentityIntrospector
             try {
                 $response = Http::acceptJson()
                     ->timeout((int) config('zolta.identity_consumer.timeout_seconds', config('identity-consumer.timeout_seconds', 5)))
-                    ->post(rtrim((string) $connection['base_url'], '/') . '/api/v1/identity/auth/introspect', [
+                    ->post(rtrim((string) $connection['base_url'], '/').'/api/v1/identity/auth/introspect', [
                         'client_id' => $connection['client_id'],
                         'client_secret' => $connection['client_secret'],
                         'token' => $token,
                     ]);
-            } catch (ConnectionException) {
-                $unavailable++;
-
-                continue;
             } catch (Throwable) {
                 $unavailable++;
 
@@ -87,8 +82,6 @@ final class IdentityIntrospector
     /** @param array<string, mixed> $payload */
     private function matchesProject(array $payload, string $expected): bool
     {
-        return $expected === ''
-            || $expected === (string) ($payload['project_id'] ?? '')
-            || $expected === (string) ($payload['project_slug'] ?? '');
+        return in_array($expected, ['', (string) ($payload['project_id'] ?? ''), (string) ($payload['project_slug'] ?? '')], true);
     }
 }

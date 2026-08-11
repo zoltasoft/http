@@ -44,3 +44,4 @@ Incoming HTTP Request
 | [Service](/modules/service) | Service class binding, documentation attributes, file uploads |
 | [Exceptions](/modules/exceptions) | Exception handling, normalization, and API error responses |
 | [Authorization](/modules/authorization) | Ability-to-permission mapping and user resolution |
+| [Identity](/modules/identity) | Remote Identity token introspection and authenticated Laravel principals |

@@ -14,7 +14,7 @@ use Zolta\Http\Identity\Laravel\IdentityPrincipal;
 
 final readonly class IntrospectIdentity
 {
-    public function __construct(private IdentityIntrospector $introspector) {}
+    public function __construct(private IdentityIntrospector $identityIntrospector) {}
 
     public function handle(Request $request, Closure $next, ?string $requiredPermission = null): Response
     {
@@ -24,7 +24,7 @@ final readonly class IntrospectIdentity
         }
 
         try {
-            $identity = $this->introspector->introspect($token);
+            $identity = $this->identityIntrospector->introspect($token);
         } catch (IdentityServiceUnavailable) {
             return response()->json(['message' => 'The Identity service is unavailable.'], 503);
         }
@@ -36,10 +36,10 @@ final readonly class IntrospectIdentity
             return response()->json(['message' => 'The required permission is missing.'], 403);
         }
 
-        $principal = new IdentityPrincipal($identity);
-        $request->setUserResolver(static fn(): IdentityPrincipal => $principal);
+        $identityPrincipal = new IdentityPrincipal($identity);
+        $request->setUserResolver(static fn (): IdentityPrincipal => $identityPrincipal);
         $request->attributes->set('identity', $identity);
-        Auth::setUser($principal);
+        Auth::setUser($identityPrincipal);
 
         return $next($request);
     }

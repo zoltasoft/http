@@ -32,17 +32,8 @@
 		"symfony/serializer": "^7.3",
 		"symfony/property-access": "^7.3",
 		"symfony/property-info": "^7.3",
-		"zolta/forge": "dev-main"
+		"zolta/forge": "^1.0"
 	},
-	"repositories": [
-		{
-			"type": "path",
-			"url": "../laravel-zolta-forge",
-			"options": {
-				"symlink": true
-			}
-		}
-	],
 	"require-dev": {
 		"mockery/mockery": "^1.6",
 		"orchestra/testbench": "^10.6",

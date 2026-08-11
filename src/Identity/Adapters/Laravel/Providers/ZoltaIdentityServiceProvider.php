@@ -12,7 +12,7 @@ final class ZoltaIdentityServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $configPath = __DIR__ . '/../config/identity-consumer.php';
+        $configPath = __DIR__.'/../config/identity-consumer.php';
 
         $this->mergeConfigFrom($configPath, 'identity-consumer');
 
@@ -27,14 +27,14 @@ final class ZoltaIdentityServiceProvider extends ServiceProvider
         );
 
         $this->app['config']->set('zolta', $configured);
-        $this->app['config']->set('identity-consumer', (array) ($configured['identity_consumer'] ?? []));
+        $this->app['config']->set('identity-consumer', $configured['identity_consumer']);
     }
 
     public function boot(Router $router): void
     {
         $router->aliasMiddleware('identity.introspect', IntrospectIdentity::class);
         $this->publishes([
-            __DIR__ . '/../config/identity-consumer.php' => config_path('identity-consumer.php'),
+            __DIR__.'/../config/identity-consumer.php' => config_path('identity-consumer.php'),
         ], 'identity-consumer-config');
     }
 

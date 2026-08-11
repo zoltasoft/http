@@ -20,7 +20,7 @@ return [
     'timeout_seconds' => (int) env('IDENTITY_INTROSPECTION_TIMEOUT_SECONDS', 5),
     'cache_seconds' => (int) env('IDENTITY_INTROSPECTION_CACHE_SECONDS', 30),
     'webhook_secrets' => array_values(array_filter(array_map(
-        static fn (string $secret): string => trim($secret),
+        trim(...),
         explode(',', (string) env('IDENTITY_WEBHOOK_SECRETS', '')),
     ))),
     'webhook_tolerance_seconds' => (int) env('IDENTITY_WEBHOOK_TOLERANCE_SECONDS', 300),
