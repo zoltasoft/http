@@ -49,6 +49,22 @@ final class RouteRegistrationSorterTest extends TestCase
         ], $uris);
     }
 
+    public function test_earlier_static_segment_wins_over_later_static_segment_count(): void
+    {
+        $routes = [
+            $this->routeEntry('/users/{id}/details/static', 'GET'),
+            $this->routeEntry('/users/me/{section}/{subsection}', 'GET'),
+        ];
+
+        $sorted = RouteRegistrationSorter::sort($routes);
+        $uris = array_map([RouteRegistrationSorter::class, 'extractUri'], $sorted);
+
+        $this->assertSame([
+            '/users/me/{section}/{subsection}',
+            '/users/{id}/details/static',
+        ], $uris);
+    }
+
     public function test_root_route_sorts_last(): void
     {
         $routes = [
@@ -176,6 +192,13 @@ final class RouteRegistrationSorterTest extends TestCase
     public function test_extract_uri_from_route_match_code(): void
     {
         $code = "Route::match(array ('GET'), '/users/{id}', [\\Controller::class, '__invoke'])";
+        $this->assertSame('/users/{id}', RouteRegistrationSorter::extractUri($code));
+    }
+
+    public function test_extract_uri_from_multi_method_route_match_code(): void
+    {
+        $code = "Route::match(array ('GET', 'HEAD'), '/users/{id}', [\\Controller::class, '__invoke'])";
+
         $this->assertSame('/users/{id}', RouteRegistrationSorter::extractUri($code));
     }
 

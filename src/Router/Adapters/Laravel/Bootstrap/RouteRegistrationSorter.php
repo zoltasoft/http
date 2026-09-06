@@ -16,11 +16,12 @@ namespace Zolta\Http\Router\Laravel\Bootstrap;
  *
  * Priority rules implemented here (highest → lowest):
  *
- * 1) More STATIC segments first
- * 2) More TOTAL segments (deeper routes) first
- * 3) Routes WITHOUT optional params `{id?}` first
- * 4) Routes WITHOUT greedy/wildcard params last (`{any}`, `{slug}`, `{path}`)
- * 5) Stable alphabetical fallback
+ * 1) At the first overlapping segment, STATIC beats DYNAMIC
+ * 2) More STATIC segments first
+ * 3) More TOTAL segments (deeper routes) first
+ * 4) Routes WITHOUT optional params `{id?}` first
+ * 5) Routes WITHOUT conventional wildcard params first
+ * 6) Deterministic alphabetical fallback
  */
 final class RouteRegistrationSorter
 {
@@ -50,7 +51,37 @@ final class RouteRegistrationSorter
      */
     public static function compareUris(string $a, string $b): int
     {
-        // 1) Routes with more STATIC segments win
+        $segmentsA = self::segments($a);
+        $segmentsB = self::segments($b);
+        $sharedDepth = min(count($segmentsA), count($segmentsB));
+
+        // A static segment must beat a dynamic segment at the same position.
+        // Global static-segment counts cannot express this safely: a route may
+        // contain more static segments later while an earlier parameter has
+        // already shadowed its static sibling.
+        for ($index = 0; $index < $sharedDepth; $index++) {
+            $segmentA = $segmentsA[$index];
+            $segmentB = $segmentsB[$index];
+
+            if ($segmentA === $segmentB) {
+                continue;
+            }
+
+            $dynamicA = self::isDynamic($segmentA);
+            $dynamicB = self::isDynamic($segmentB);
+
+            if ($dynamicA !== $dynamicB) {
+                return $dynamicA <=> $dynamicB;
+            }
+
+            // Different static literals cannot shadow one another, so their
+            // remaining segments do not affect precedence.
+            if (! $dynamicA) {
+                break;
+            }
+        }
+
+        // 2) Routes with more STATIC segments win
         $staticA = self::countStaticSegments($a);
         $staticB = self::countStaticSegments($b);
 
@@ -58,15 +89,15 @@ final class RouteRegistrationSorter
             return $staticB <=> $staticA;
         }
 
-        // 2) Deeper routes win
-        $depthA = count(self::segments($a));
-        $depthB = count(self::segments($b));
+        // 3) Deeper routes win
+        $depthA = count($segmentsA);
+        $depthB = count($segmentsB);
 
         if ($depthA !== $depthB) {
             return $depthB <=> $depthA;
         }
 
-        // 3) Routes WITHOUT optional params `{id?}` win
+        // 4) Routes WITHOUT optional params `{id?}` win
         $optionalA = self::countOptionalParams($a);
         $optionalB = self::countOptionalParams($b);
 
@@ -74,7 +105,7 @@ final class RouteRegistrationSorter
             return $optionalA <=> $optionalB;
         }
 
-        // 4) Routes WITHOUT wildcard params win LAST
+        // 5) Routes WITHOUT conventional wildcard params win
         $wildA = self::countWildcardParams($a);
         $wildB = self::countWildcardParams($b);
 
@@ -82,7 +113,7 @@ final class RouteRegistrationSorter
             return $wildA <=> $wildB;
         }
 
-        // 5) Stable alphabetical fallback
+        // 6) Deterministic alphabetical fallback
         return strcmp($a, $b);
     }
 
@@ -93,14 +124,14 @@ final class RouteRegistrationSorter
     {
         $code = is_array($route) ? ($route['code'] ?? '') : (string) $route;
 
-        // Route::match([...], '/uri', ...)
-        if (preg_match("#Route::match\([^,]+,\s*'([^']*)'#", $code, $m)) {
-            return $m[1];
+        // Route::match([...], '/uri', ...), including multi-method arrays.
+        if (preg_match("#Route::match\(\s*(?:array\s*\(.*?\)|\[.*?\])\s*,\s*(['\"])(.*?)\\1\s*,#s", $code, $matches)) {
+            return $matches[2];
         }
 
-        // Route::get('/uri', ...)
-        if (preg_match("#Route::\w+\(\s*'([^']*)'#", $code, $m)) {
-            return $m[1];
+        // Route::get('/uri', ...) and equivalent verb helpers.
+        if (preg_match("#Route::\w+\(\s*(['\"])(.*?)\\1\s*,#s", $code, $matches)) {
+            return $matches[2];
         }
 
         return '';
