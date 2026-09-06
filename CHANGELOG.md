@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.1] - 2026-09-06
+
+### Fixed
+- Preserved static attribute-route precedence when route caches are rebuilt or incrementally updated across multiple controller files
+- Corrected URI extraction for multi-method cached route registrations
+
 ---
 
 ## [2.1.0] - 2026-08-11
@@ -46,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version comparison links
 
-[Unreleased]: https://github.com/zoltasoft/http/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/zoltasoft/http/compare/v2.1.1...HEAD
+[2.1.1]: https://github.com/zoltasoft/http/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/zoltasoft/http/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/zoltasoft/http/compare/v1.0.0...v2.0.0

@@ -518,8 +518,7 @@ PHP;
             }
         }
 
-        // return RouteRegistrationSorter::sort($flattened);
-        return $flattened;
+        return RouteRegistrationSorter::sort($flattened);
     }
 
     /**
